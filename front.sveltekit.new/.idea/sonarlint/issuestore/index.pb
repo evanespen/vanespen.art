@@ -23,11 +23,3 @@ T
 $src/routes/animalier/+page.server.ts,6/5/6564a4d0db56567b56f420b58254a407e24ece5d
 F
 src/lib/services/db.ts,d/3/d328ef25161e1319410a1e80413959bc28882429
-[
-+src/routes/animalier/[name]/+page.server.ts,8/3/839076846e0399ab78de47631612b0acd9db1366
-O
-src/routes/galerie/+page.svelte,c/0/c08495185bc981638ac02ec8b3de1e41a438f9dd
-G
-src/lib/LightBox.svelte,9/c/9c182a0221eae7fb2e65a99419db4e6b0b5502a7
-F
-src/lib/Picture.svelte,c/c/cc14b912b724e982947a13f6b2cbe7225b77e9d3
