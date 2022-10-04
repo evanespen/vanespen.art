@@ -1,0 +1,17 @@
+@import "fonts.scss";
+@import "color.scss";
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: $background;
+  color: $text;
+}
+
+@mixin hspace-x {
+  @for $i from 1 through 1000 {
+    .hspace-#{$i} { height: #{$i}px; }
+  }
+}
+
+@include hspace-x;
