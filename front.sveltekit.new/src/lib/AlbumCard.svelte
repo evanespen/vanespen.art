@@ -70,7 +70,7 @@
     }
 
     .specie-card-header {
-      @include f-h-b;
+      //@include f-h-b;
       position: absolute;
       top: 0;
       left: 0;
@@ -85,8 +85,11 @@
       background-color: rgba(0, 0, 0, .3);
 
       .top {
+        font-family: 'sterla' !important;
+        font-variant: small-caps;
         padding: 10px;
-        font-size: 2em;
+        font-size: 2.5em;
+        font-weight: bolder;
         text-align: left;
         filter: drop-shadow(2px 5px 5px rgba(0, 0, 0, .5));
       }

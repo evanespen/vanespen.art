@@ -33,6 +33,7 @@
 		"cookie": "^0.4.1",
 		"cors": "^2.8.5",
 		"dotenv": "^16.0.1",
+		"hammerjs": "^2.0.8",
 		"lax.js": "^2.0.3",
 		"locomotive-scroll": "^4.1.4",
 		"moment": "^2.29.4",

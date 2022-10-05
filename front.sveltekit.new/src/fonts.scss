@@ -1,4 +1,3 @@
-
 @font-face {
   font-family: 'Brogte';
   src: url('/fonts/Brogte.otf');
@@ -15,9 +14,9 @@
 }
 
 @mixin f-h {
-    //font-family: brioso-pro,serif;
-    //font-weight: 400;
-    //font-style: normal;
+  //font-family: brioso-pro,serif;
+  //font-weight: 400;
+  //font-style: normal;
   font-family: sterla;
   font-weight: 400;
 }
@@ -45,7 +44,7 @@
 }
 
 @mixin f-p-2 {
-  font-family: quiverleaf-cf,sans-serif;
+  font-family: quiverleaf-cf, sans-serif;
   font-weight: 800;
   font-style: normal;
 }

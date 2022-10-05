@@ -1,18 +1,18 @@
 <script lang="ts">
-    import {createEventDispatcher, getContext, onMount} from "svelte"
-    import Moment from 'moment'
-    import Close from '$lib/svgs/close.svg'
-    import ChevronLeft from '$lib/svgs/chevronLeft.svg'
-    import ChevronRight from '$lib/svgs/chevronRight.svg'
-    import Aperture from '$lib/svgs/aperture.svg?url'
-    import Calendar from '$lib/svgs/calendar.svg?url'
-    import Camera from '$lib/svgs/camera.svg?url'
-    import Flash from '$lib/svgs/flash.svg?url'
-    import Iso from '$lib/svgs/iso.svg?url'
-    import Ruler from '$lib/svgs/ruler.svg?url'
-    import Settings from '$lib/svgs/settings.svg?url'
-    import Timer from '$lib/svgs/time.svg?url'
-    import {apiUrl} from '$lib/config.ts'
+    import {beforeUpdate, createEventDispatcher, getContext} from "svelte";
+    import Moment from 'moment';
+    import Close from '$lib/svgs/close.svg';
+    import ChevronLeft from '$lib/svgs/chevronLeft.svg';
+    import ChevronRight from '$lib/svgs/chevronRight.svg';
+    import Aperture from '$lib/svgs/aperture.svg?url';
+    import Calendar from '$lib/svgs/calendar.svg?url';
+    import Camera from '$lib/svgs/camera.svg?url';
+    import Flash from '$lib/svgs/flash.svg?url';
+    import Iso from '$lib/svgs/iso.svg?url';
+    import Ruler from '$lib/svgs/ruler.svg?url';
+    import Settings from '$lib/svgs/settings.svg?url';
+    import Timer from '$lib/svgs/time.svg?url';
+    import {apiUrl} from '$lib/config.ts';
 
     const dispatch = createEventDispatcher()
     let lightBox
@@ -87,8 +87,28 @@
         }
     }
 
-    onMount(() => {
-    })
+    beforeUpdate(() => {
+        // if (lightBox) {
+        //     lightBox.addEventListener('click', event => {
+        //         closeLightbox();
+        //     });
+        // }
+
+        if (window && lightBox) {
+            import('hammerjs').then(Hammer => {
+                const manager = new Hammer.Manager(lightBox);
+                const Swipe = new Hammer.Swipe();
+                manager.add(Swipe);
+                manager.on('swipe', function (e) {
+                    if (e.offsetDirection === 2) {
+                        nextPicture();
+                    } else if (e.offsetDirection === 4) {
+                        prevPicture();
+                    }
+                });
+            });
+        }
+    });
 </script>
 
 
@@ -228,6 +248,10 @@
         flex-direction: column;
         width: 15vw;
 
+        @media (max-width: 800px) {
+          display: none;
+        }
+
         .lightbox-infos-entry {
           display: flex;
           flex-direction: row;
@@ -255,6 +279,10 @@
         flex-direction: row;
         justify-content: center;
         align-items: center;
+
+        @media (max-width: 800px) {
+          width: 100vw;
+        }
 
         img {
           max-width: 75vw;
