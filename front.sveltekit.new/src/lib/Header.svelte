@@ -12,11 +12,14 @@
 
 <main id="header">
     {#if $page.url.pathname != '/'}
-        <a id="home-link" class="link" href="/">Accueil</a>
+        <a id="home-link-desktop" class="link" href="/">Accueil</a>
     {:else}
-        <div></div>
+        <div id="home-link-desktop"></div>
     {/if}
     <div id="links">
+        {#if $page.url.pathname != '/'}
+            <a id="home-link-mobile" class="link" href="/">Accueil</a>
+        {/if}
         {#each Object.keys(routes) as href}
             <a class:active={$page.url.pathname.includes(href)} class="link" {href}>{routes[href]}</a>
         {/each}
@@ -41,9 +44,26 @@
     background-color: $background;
     z-index: 100000;
 
-    #home-link {
+    #home-link-desktop {
       margin-left: 1vw;
     }
+
+    @media (max-width: 800px) {
+      #home-link-desktop {
+        display: none;
+      }
+    }
+
+    #home-link-mobile {
+      display: none;
+    }
+
+    @media (max-width: 800px) {
+      #home-link-mobile {
+        display: block;
+      }
+    }
+
 
     #links {
       width: 20%;

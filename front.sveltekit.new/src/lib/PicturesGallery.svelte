@@ -2,7 +2,6 @@
     import {createEventDispatcher, onMount, setContext} from "svelte";
     import Picture from "$lib/Picture.svelte";
     import LightBox from "$lib/LightBox.svelte";
-    import SideTitles from "$lib/SideTitles.svelte";
 
     export let pictures;
     export let mode;
@@ -52,8 +51,6 @@
 </script>
 
 <main>
-    <SideTitles/>
-
     <LightBox bind:this={lightbox}/>
 
     {#if mode == 'grouped'}

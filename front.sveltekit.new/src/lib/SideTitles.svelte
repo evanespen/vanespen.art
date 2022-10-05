@@ -1,42 +1,57 @@
-<div id="title">EVRARD VAN ESPEN</div>
-<div id="subtitle">Photographie</div>
+<div id="side-title">EVRARD VAN ESPEN</div>
+<div id="side-subtitle">Photographie</div>
 
 <style lang="scss">
   @import "$src/color.scss";
   @import "$src/fonts.scss";
 
-  #title {
+  #side-title {
     @include f-h;
     color: $subcolor;
     opacity: .1;
     z-index: 1000000;
     font-size: 6em;
-    position: fixed;
-    bottom: 0;
-    left: 6vw;
-    transform: rotate(-90deg);
-    transform-origin: bottom left;
-    width: 100vh;
+
     display: flex;
     justify-content: center;
-    align-items: center;
+
+    position: fixed;
+    width: 100vh;
+    top: 95vh;
+    left: 4.5vh;
+
+    transform: rotate(-90deg);
+    transform-origin: left center;
+
     pointer-events: none;
+
+    @media (max-width: 800px) {
+      font-size: 4em;
+    }
   }
 
-  #subtitle {
+  #side-subtitle {
     @include f-h;
     font-size: 4em;
     color: $subcolor;
     opacity: .1;
     z-index: 1000000;
-    font-size: 4em;
+
     position: fixed;
-    top: 50vh;
-    right: -22vw;
-    transform: rotate(90deg);
     width: 100vh;
+    top: 96vh;
+    right: 3vh;
+
     display: flex;
     justify-content: center;
-    align-items: center;
+
+    transform: rotate(90deg);
+    transform-origin: right center;
+
+    pointer-events: none;
+
+    @media (max-width: 800px) {
+      font-size: 3em;
+    }
   }
-  </style>
+</style>

@@ -1,8 +1,8 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {slide} from 'svelte/transition';
-    import SideTitles from "$lib/SideTitles.svelte";
     import PicturesGallery from "$lib/PicturesGallery.svelte";
+    import SideTitles from "$lib/SideTitles.svelte";
 
     /** @type {import('./$types').PageData} */
     export let data;
