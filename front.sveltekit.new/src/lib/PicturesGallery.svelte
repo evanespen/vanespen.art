@@ -120,6 +120,12 @@
     row-gap: 5vmin;
     column-gap: 5vmin;
 
+    @media (max-width: 800px) {
+      grid-template-columns: repeat(2, 37.5vw);
+      //display: flex;
+      //flex-direction: column;
+    }
+
     img {
       height: 100%;
       min-height: 300px;

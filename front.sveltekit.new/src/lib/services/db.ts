@@ -14,7 +14,7 @@ export const db = {
             const pictures = await client.query('SELECT * FROM pictures ORDER BY timestamp DESC');
             return pictures.rows;
         } catch (err) {
-            console.error(error);
+            console.error(err);
             return [];
         }
     },

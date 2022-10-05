@@ -18,6 +18,7 @@
             rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) * 1.5 &&
             rect.right <= (window.innerWidth || document.documentElement.clientWidth) * 1.5
         ) {
+            console.log(apiUrl);
             $: src = apiUrl + '/THUMBS/' + picture.path;
         }
     }
@@ -64,13 +65,19 @@
     //justify-content: center;
     filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, .3));
 
+    @media (max-width: 800px) {
+      min-height: 200px;
+    }
+
     &.orient-landscape {
       grid-column-end: span 2;
       grid-row-end: span 1;
 
       &.stared {
-        grid-column-end: span 3;
-        grid-row-end: span 2;
+        @media (min-width: 800px) {
+          grid-column-end: span 3;
+          grid-row-end: span 2;
+        }
       }
     }
 

@@ -47,6 +47,10 @@
     position: relative;
     overflow: hidden;
 
+    @media (max-width: 800px) {
+      width: 100%;
+    }
+
     &:hover {
       cursor: pointer;
 

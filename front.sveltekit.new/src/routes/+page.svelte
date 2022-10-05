@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte'
+    import {onMount} from 'svelte'
 
     import lax from 'lax.js'
 
@@ -68,11 +68,15 @@
 
             if (landingTitle) {
                 if (posY > 90) {
-                    landingTitle.style.color = '#211a17'
-                    landingSubtitle.style.color = '#211a17'
+                    // landingTitle.style.color = '#211a17'
+                    // landingSubtitle.style.color = '#211a17'
+                    landingTitle.classList.add('scrolled')
+                    landingSubtitle.classList.add('scrolled')
                 } else {
-                    landingTitle.style.color = '#fff8ee'
-                    landingSubtitle.style.color = '#fff8ee'
+                    // landingTitle.style.color = '#fff8ee'
+                    // landingSubtitle.style.color = '#fff8ee'
+                    landingTitle.classList.remove('scrolled')
+                    landingSubtitle.classList.remove('scrolled')
                 }
             }
 
@@ -151,12 +155,12 @@
                     i.dataset.animated = true
 
 
-                    let translateYBy = - (rect.top - shadowRect.top)
+                    let translateYBy = -(rect.top - shadowRect.top)
 
 
                     let translateXBy
-                    if (rect.left < shadowRect.right) translateXBy = - (rect.left - shadowRect.left) + 200
-                    else translateXBy = (window.innerWidth/2 - rect.left) + 200
+                    if (rect.left < shadowRect.right) translateXBy = -(rect.left - shadowRect.left) + 200
+                    else translateXBy = (window.innerWidth / 2 - rect.left) + 200
 
 
                     i.style.transform = `scale(2)` //`translateY(${translateYBy}px) translateX(${translateXBy}px) scale(2)`
@@ -173,7 +177,7 @@
 
 <svelte:head>
     <title>Evrard Van Espen, photographie</title>
-    <meta name="description" content="Evrard Van Espen, photographie" />
+    <meta name="description" content="Evrard Van Espen, photographie"/>
     <link rel="stylesheet" href="src/locomotive-scroll.min.css">
 </svelte:head>
 
@@ -182,19 +186,25 @@
     <div id="shadow-image-position"></div>
 
     <div id="landing">
-        <img bind:this={landingImg}
-             id="landing-image"
-             src='https://imagedelivery.net/SBTKyitl9TX77hzo56nCqA/195a93cd-5675-43dc-b4c5-d80c14448f00/public'/>
+        <!--        <img bind:this={landingImg}-->
+        <!--             id="landing-image"-->
+        <!--             src='https://imagedelivery.net/SBTKyitl9TX77hzo56nCqA/195a93cd-5675-43dc-b4c5-d80c14448f00/public'/>-->
+        <div bind:this={landingImg}
+             id="landing-image"></div>
         <div bind:this={landingTitle}
-             id="landing-title">EVRARD VAN ESPEN</div>
+             id="landing-title">EVRARD VAN ESPEN
+        </div>
         <div bind:this={landingSubtitle}
-             id="landing-subtitle">Photographie</div>
+             id="landing-subtitle">Photographie
+        </div>
     </div>
 
-    <img bind:this={landingCTA}
-         on:click={() => {scrollTo(0, window.innerHeight * 2)}}
-         id="landing-cta"
-         src="https://imagedelivery.net/SBTKyitl9TX77hzo56nCqA/a52bb9b9-0f2a-4c94-dd10-fc6d37987400/public"/>
+    <div id="landing-cta-container">
+        <img bind:this={landingCTA}
+             on:click={() => {scrollTo(0, window.innerHeight * 2)}}
+             id="landing-cta"
+             src="https://imagedelivery.net/SBTKyitl9TX77hzo56nCqA/a52bb9b9-0f2a-4c94-dd10-fc6d37987400/public"/>
+    </div>
 
     <div id="home-content" bind:this={homeContent}>
 
@@ -224,7 +234,6 @@
                 <img src="https://imagedelivery.net/SBTKyitl9TX77hzo56nCqA/a5142786-781d-44a1-3629-e27fce861f00/public"/>
             </div>
         </div>
-
 
 
     </div>
@@ -260,6 +269,9 @@
       color: $background;
 
       #landing-image {
+        background-image: url(https://imagedelivery.net/SBTKyitl9TX77hzo56nCqA/195a93cd-5675-43dc-b4c5-d80c14448f00/public);
+        background-size: cover;
+        background-position: center;
         position: absolute;
         height: 90vh;
         width: 95vw;
@@ -273,9 +285,14 @@
         justify-content: center;
 
         font-size: 6em;
-        z-index: 100000;
+        z-index: 100;
 
         transition: .5s;
+        color: #fff8ee;
+
+        @media (max-width: 800px) {
+          font-size: 11vw;
+        }
       }
 
       #landing-subtitle {
@@ -286,27 +303,39 @@
         justify-content: center;
 
         font-size: 4em;
+        font-variant: all-small-caps;
         margin-top: -20px;
-        z-index: 100000;
+        z-index: 100;
 
         transition: .5s;
+        color: #fff8ee;
+
+        @media (max-width: 800px) {
+          font-size: 8vw;
+        }
       }
     }
 
-    #landing-cta {
+    #landing-cta-container {
+      width: 100vw;
       position: fixed;
       top: 80vh;
-      left: 47.5vw;
       z-index: 1000000;
-      height: 10vh;
-      width: 10vh;
-      filter: invert(1);
-      animation: pulse 2s infinite;
-      transition: .5s;
       display: flex;
+      justify-content: center;
+      align-items: center;
 
-      &:hover {
-        cursor: pointer;
+      #landing-cta {
+        height: 10vh;
+        width: 10vh;
+        filter: invert(1);
+        animation: pulse 2s infinite;
+        transition: .5s;
+        display: flex;
+
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
 
@@ -316,6 +345,7 @@
       left: 10%;
       height: 100vh;
       width: 80%;
+      z-index: 1000;
 
       /* #home-content-images { */
       /* 	display: flex; */
@@ -370,11 +400,23 @@
         .home-content-row-images {
           display: flex;
 
+          @media (max-width: 800px) {
+            flex-direction: row;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            width: 100%;
+          }
+
           img {
             max-height: 30vh;
             margin-right: 10px;
             transition: .5s;
             transform-origin: left top;
+
+            @media (max-width: 800px) {
+              margin: 0 0 10px;
+              max-width: 100%;
+            }
 
             /* &:hover { */
             /*   max-height: 80vh; */
@@ -392,6 +434,14 @@
     }
     50% {
       transform: scale(1.2);
+    }
+  }
+
+  :global(.scrolled) {
+    color: #211a17 !important;
+
+    @media (max-width: 800px) {
+      opacity: 0 !important;
     }
   }
 </style>
