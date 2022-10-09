@@ -9,7 +9,10 @@
 
     let picturesContainer;
 
-    onMount(() => {
+    let pictures;
+
+    onMount(async () => {
+        pictures = data.pictures;
     })
 </script>
 
@@ -17,17 +20,11 @@
 
     <SideTitles/>
 
-    <div id="pictures" bind:this={picturesContainer}>
-        <PicturesGallery pictures={data.pictures} mode="grouped"/>
-
-        <!--{#each Object.keys(data.pictures) as month}-->
-        <!--    <div class="month-header">-->
-        <!--        <h2>{month}</h2>-->
-        <!--        <h5>({data.pictures[month].length} photos)</h5>-->
-        <!--    </div>-->
-        <!--    <PicturesGallery pictures={data.pictures[month]} mode="mainGallery" on:openLightbox={openLightbox} />-->
-        <!--{/each}-->
-    </div>
+    {#if pictures}
+        <div id="pictures" bind:this={picturesContainer}>
+            <PicturesGallery pictures={pictures} mode="grouped"/>
+        </div>
+    {/if}
 </main>
 
 <style lang="scss">

@@ -12,7 +12,6 @@
     import Ruler from '$lib/svgs/ruler.svg?url';
     import Settings from '$lib/svgs/settings.svg?url';
     import Timer from '$lib/svgs/time.svg?url';
-    import {apiUrl} from '$lib/config.ts';
 
     const dispatch = createEventDispatcher()
     let lightBox
@@ -130,7 +129,7 @@
         <div id="lightbox-content">
 
             <div id="lightbox-content-image-container">
-                <img src={apiUrl + '/PICTURES/' + picture.path} alt="">
+                <img src={'/api/pictures/' + picture.path + '?type=half'} alt="">
             </div>
 
             <div id="lightbox-content-infos">

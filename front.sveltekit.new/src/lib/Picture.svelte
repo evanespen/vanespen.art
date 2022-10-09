@@ -1,9 +1,10 @@
 <script lang="ts">
-    export let picture;
-
     import {createEventDispatcher, onMount} from "svelte";
     import {scale} from 'svelte/transition';
-    import {apiUrl} from '$lib/config.ts';
+    import {username} from "$lib/services/userStore.ts";
+    import Icon from '@iconify/svelte';
+
+    export let picture;
 
     const dispatch = createEventDispatcher();
     let imageElem;
@@ -18,8 +19,7 @@
             rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) * 1.5 &&
             rect.right <= (window.innerWidth || document.documentElement.clientWidth) * 1.5
         ) {
-            console.log(apiUrl);
-            $: src = apiUrl + '/THUMBS/' + picture.path;
+            $: src = '/api/pictures/' + picture.path + '?type=thumb';
         }
     }
 
@@ -34,6 +34,29 @@
 
     function openLightbox() {
         dispatch('openLightbox', {picture});
+    }
+
+    async function starImage(evt) {
+        evt.stopPropagation();
+        const action = picture.stared ? 'unstar' : 'star';
+        const response = await fetch(`/api/pictures?id=${picture.id}&action=${action}`, {
+            method: 'PUT'
+        });
+
+        if (response.status === 200) {
+            console.log('picture starred');
+        }
+    }
+
+    async function deleteImage(evt) {
+        evt.stopPropagation();
+        const response = await fetch(`/api/pictures?id=${picture.id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.status === 200) {
+            console.log('picture deleted')
+        }
     }
 
     onMount(() => {
@@ -52,6 +75,16 @@
      bind:this={imageElem}
      on:click={openLightbox}>
     <img {src} on:mousemove={handleMouseMove} on:mouseleave={handleMouseLeave}/>
+    {#if $username}
+        <div class="admin-buttons">
+            <button class="btn-icon btn-warning" on:click={starImage}>
+                <Icon icon="carbon:star" color="white" width={20}/>
+            </button>
+            <button class="btn-icon btn-error" on:click={deleteImage}>
+                <Icon icon="carbon:trash-can" color="white" width={20}/>
+            </button>
+        </div>
+    {/if}
 </div>
 
 
@@ -60,10 +93,27 @@
     position: relative;
     overflow: hidden;
     display: flex;
+    flex-direction: column;
     min-height: 400px;
     //align-items: center;
     //justify-content: center;
     filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, .3));
+
+    .admin-buttons {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      z-index: 1000000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: calc(100% - 20px);
+
+      button {
+        margin-top: 10px;
+        width: calc(50% - 5px);
+      }
+    }
 
     @media (max-width: 800px) {
       min-height: 200px;

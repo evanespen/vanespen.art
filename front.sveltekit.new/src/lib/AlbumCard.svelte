@@ -4,7 +4,6 @@
 
     import {onMount} from "svelte";
     import {goto} from '$app/navigation';
-    import {apiUrl} from '$lib/config.ts';
 
     let specieCardImage;
 
@@ -14,7 +13,7 @@
 
     onMount(() => {
         if (specieCardImage) {
-            specieCardImage.style.backgroundImage = 'url(' + apiUrl + '/THUMBS/' + album.pictures[0].path + ')';
+            specieCardImage.style.backgroundImage = 'url(' + '/api/pictures/' + album.pictures[0].path + '?type=thumb' + ')';
         }
     })
 </script>

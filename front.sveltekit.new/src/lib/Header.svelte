@@ -1,5 +1,8 @@
-<script>
-    import {page} from '$app/stores'
+<script lang="ts">
+    import {goto} from "$app/navigation";
+    import {username} from "$lib/services/userStore.ts";
+    import {page} from '$app/stores';
+
 
     let routes = {
         '/galerie': 'Galerie',
@@ -7,6 +10,10 @@
         '/albums': 'Albums',
         // '/prestations': 'Prestations',
         // '/apropos': 'A Propos'
+    };
+
+    function logout() {
+        goto('/logout');
     }
 </script>
 
@@ -23,6 +30,9 @@
         {#each Object.keys(routes) as href}
             <a class:active={$page.url.pathname.includes(href)} class="link" {href}>{routes[href]}</a>
         {/each}
+        {#if $username}
+            <div class="logged-in" on:click={logout}>&times;</div>
+        {/if}
     </div>
 </main>
 
@@ -76,6 +86,16 @@
         width: 100%;
         padding-right: 0;
         justify-content: space-around;
+      }
+
+      .logged-in {
+        color: #F4511E;
+        font-size: 1.5em;
+        font-weight: bold;
+
+        &:hover {
+          cursor: pointer;
+        }
       }
     }
 

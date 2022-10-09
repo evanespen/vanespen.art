@@ -19,6 +19,56 @@ export const db = {
         }
     },
 
+    async insertPicture(picture) {
+        const queryStr = `
+            INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode, timestamp, path, stared, blured, landscape) VALUES
+            (
+            '${picture.aperture}',
+            '${picture.camera}',
+            '${picture.exposure}',
+            '${picture.flash}',
+            '${picture.focal}',
+            '${picture.focal}',
+            '${picture.iso}',
+            '${picture.lens}',
+            '${picture.mode}',
+            timestamp '${picture.dateString}',
+            '${picture.path}',
+            false,
+            false,
+            ${picture.landscape}
+            )
+            `;
+        return client.query(queryStr);
+    },
+
+    async deletePicture(id) {
+        try {
+            const query = await client.query(`DELETE FROM pictures WHERE id = ${id}`)
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async starPicture(id) {
+        try {
+            const query = await client.query(`UPDATE pictures SET stared = true WHERE id = ${id}`)
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async unstarPicture(id) {
+        try {
+            const query = await client.query(`UPDATE pictures SET stared = false WHERE id = ${id}`)
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
     async picturesBySpecieId(specieId) {
         try {
             const pictures = await client.query(`SELECT * FROM pictures WHERE pictures.species_id = ${specieId}`);
@@ -29,20 +79,28 @@ export const db = {
         }
     },
 
-    // async picturesByAlbumId (albumId) {
-    //     try {
-    //         const pictures = await client.query(`SELECT * FROM pictures WHERE pictures._id = ${specieId}`)
-    //         return pictures.rows
-    //     } catch (err) {
-    //         console.error(err)
-    //         return []
-    //     }
-    // },
-
     async species() {
         try {
             const species = await client.query('SELECT * FROM species');
             return species.rows;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    },
+
+    async speciesWithPictures() {
+        try {
+            const _species = await client.query('SELECT * FROM species');
+
+            let species = [];
+            for (const s of _species.rows) {
+                const picturesQuery = await client.query(`SELECT * FROM pictures WHERE pictures.species_id IS NOT NULL AND pictures.species_id = ${s.id}`);
+                s.pictures = picturesQuery.rows;
+                species.push(s);
+            }
+
+            return species;
         } catch (err) {
             console.error(err);
             return [];
@@ -60,6 +118,14 @@ export const db = {
         } catch (err) {
             console.error(err);
         }
+    },
+
+    async addToSpecie(specieId, pictureId) {
+        const query = await client.query(`UPDATE pictures SET species_id = ${specieId} WHERE id = ${pictureId}`);
+    },
+
+    async removeFromSpecie(specieId, pictureId) {
+        const query = await client.query(`UPDATE pictures SET species_id = NULL WHERE id = ${pictureId}`);
     },
 
     async albums() {
@@ -93,5 +159,25 @@ export const db = {
         } catch (err) {
             console.error(err);
         }
-    }
+    },
+
+    async addToAlbum(albumId, pictureId) {
+        try {
+            const query = await client.query(`INSERT INTO albums_pictures(picture_id, gallery_id) VALUES(${pictureId}, ${albumId})`)
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async removeFromAlbum(albumId, pictureId) {
+        try {
+            const query = await client.query(`DELETE FROM albums_pictures WHERE picture_id = ${pictureId} AND gallery_id = ${albumId}`)
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
 }
