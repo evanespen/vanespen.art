@@ -1,4 +1,6 @@
-import {Pool} from 'pg';
+// import {Pool} from 'pg';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 const client = new Pool({
     user: import.meta.env.VITE_PG_USER,

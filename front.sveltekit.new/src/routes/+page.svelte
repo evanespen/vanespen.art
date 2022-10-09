@@ -178,7 +178,6 @@
 <svelte:head>
     <title>Evrard Van Espen, photographie</title>
     <meta name="description" content="Evrard Van Espen, photographie"/>
-    <link rel="stylesheet" href="src/locomotive-scroll.min.css">
 </svelte:head>
 
 <main id="home" bind:this={mainCT}>
