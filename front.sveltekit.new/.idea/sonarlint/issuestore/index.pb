@@ -38,8 +38,6 @@ Z
 -src/routes/api/pictures/[filename]/+server.ts,d/2/d2f875b8bd733d565902dc06925c4cb1d2e82912
 R
 "src/routes/api/pictures/+server.ts,2/8/287f4bf6337fa1c2a7a0fc72cb09af0c01313d60
-T
-$src/routes/admin/upload/+page.svelte,b/f/bf9cafd946b5c76535eb512a1aa2adc5e94b20b4
 [
 +src/routes/admin/specieseditor/+page.svelte,3/b/3b423687a27440b2cd746a95fc0263f9768debd8
 Q
@@ -52,7 +50,3 @@ M
 src/routes/login/+page.svelte,3/0/30afc255620d9af551ec4b3180d1c6ad5713a268
 N
 src/routes/logout/+page.svelte,2/5/25c84b79bad20ed787819a7adbc605d080e3d2d4
-C
-src/hooks.server.ts,9/4/942a1693401444fa24de4b6f50876b7dca6c1397
-P
- src/routes/login/+page.server.ts,4/a/4aa6216ce946997970c7a463da9fdf18d27fadf3

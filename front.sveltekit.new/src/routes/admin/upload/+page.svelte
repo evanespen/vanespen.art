@@ -41,6 +41,7 @@
     }
 
     function upload() {
+        console.log('starting upload');
         const payload = new FormData()
 
         for (let i = 0; i < files.length; i++) {
