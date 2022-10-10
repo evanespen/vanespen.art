@@ -43,7 +43,7 @@ export async function POST({url, request}) {
         files.push(data.get(`file_${i}`));
     }
 
-    console.log(`got ${files.length} files : ${files}`);
+    console.log(`got ${files.length} files : ${files.map(f => f.name)}`);
 
     const MAIN = import.meta.env.VITE_STORAGE_MAIN;
     const THUMB = import.meta.env.VITE_STORAGE_THUMB;
