@@ -21,3 +21,11 @@ export async function PUT({request}) {
 
     return json({status: 'ok'});
 }
+
+
+export async function POST({request}) {
+    const payload = await request.json();
+    await db.createAlbum(payload.name, payload.description);
+
+    return json({status: 'ok'});
+}

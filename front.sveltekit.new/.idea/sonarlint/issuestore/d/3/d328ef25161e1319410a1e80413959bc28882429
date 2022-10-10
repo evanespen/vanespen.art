@@ -1,7 +1,9 @@
 
-Otypescript:S1854/"3Remove this useless assignment to variable "query".(Îô‰­
-Ttypescript:S18548"3Remove this useless assignment to variable "query".(ÿ«Ö‰şÿÿÿÿ
-Ttypescript:S1854A"3Remove this useless assignment to variable "query".(—Ûœ¢ûÿÿÿÿ
-[typescript:S1854|"3Remove this useless assignment to variable "query".(ÄäŠ–ÿÿÿÿÿ8€çìç»0
-typescript:S1172"gRemove the unused function parameter "specieId" or rename it to "_specieId" to make intention explicit.(¹±Ìüÿÿÿÿ8èÑïç»0
-Wtypescript:S1854€"3Remove this useless assignment to variable "query".( À§‡8üŸïç»0
+?typescript:S125"Remove this commented out code.(ñ‹şãıÿÿÿÿ
+Otypescript:S18542"3Remove this useless assignment to variable "query".(Îô‰­
+Ttypescript:S1854;"3Remove this useless assignment to variable "query".(ÿ«Ö‰şÿÿÿÿ
+Ttypescript:S1854D"3Remove this useless assignment to variable "query".(—Ûœ¢ûÿÿÿÿ
+Ttypescript:S1854"3Remove this useless assignment to variable "query".(ÄäŠ–ÿÿÿÿÿ
+‰typescript:S1172‚"gRemove the unused function parameter "specieId" or rename it to "_specieId" to make intention explicit.(¹±Ìüÿÿÿÿ
+Ptypescript:S1854ƒ"3Remove this useless assignment to variable "query".( À§‡
+8typescript:S3626ª"Remove this redundant jump.(ûÁİ…

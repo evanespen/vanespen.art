@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {NativeSelect} from '@svelteuidev/core';
+    import {Button, NativeSelect, TextInput} from '@svelteuidev/core';
     import {onMount} from "svelte";
 
     let pictures = [], albums = [];
@@ -7,6 +7,8 @@
     let selectedAlbum,// = albums[0],
         selectedAlbumName,// = selectedAlbum.name,
         picturesInAlbum;// = selectedAlbum.pictures.map(p => p.id);
+
+    let newAlbumName, newAlbumDesc;
 
     function
     handleAlbumSelectChange(evt) {
@@ -46,10 +48,27 @@
                 } else {
                     selectedAlbum = albums[0];
                 }
+                console.log('selectedalbum', selectedAlbum);
                 selectedAlbumName = selectedAlbum.name;
                 picturesInAlbum = selectedAlbum.pictures.map(p => p.id);
             });
         });
+    }
+
+    function newAlbum() {
+        console.log(newAlbumName, newAlbumDesc);
+
+        fetch('/api/albums', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: newAlbumName,
+                description: newAlbumDesc
+            })
+        }).then(res => {
+            console.log(res);
+            loadAlbums(undefined);
+        })
+
     }
 
     onMount(() => {
@@ -65,13 +84,17 @@
 </script>
 
 <main>
+    <TextInput placeholder="Nom" label="Nom" bind:value={newAlbumName}/>
+    <TextInput placeholder="Description" label="Description" bind:value={newAlbumDesc}/>
+    <Button on:click={newAlbum}>Nouvel album</Button>
+
     {#if pictures.length > 0 && albums.length > 0}
-        <NativeSelect data={albums.map(a => a.name)}
+        <NativeSelect data={albums.map(a => a.name).sort()}
                       bind:value={selectedAlbumName}
                       label="Album a éditer"/>
         <div id="picture-display">
             {#each pictures as picture}
-                <img src={'/api/pictures/' + album.picture[0].path + '?type=thumb'}
+                <img src={'/api/pictures/' + picture.path + '?type=thumb'}
                      on:click={() => toggleInAlbum(picture)}
                      class:selected={picturesInAlbum?.includes(picture.id)}>
             {/each}

@@ -32,21 +32,31 @@ G
 src/lib/LightBox.svelte,9/c/9c182a0221eae7fb2e65a99419db4e6b0b5502a7
 H
 src/lib/AlbumCard.svelte,8/2/823b27ffbcc7af1d8b8bb5059ee2833958d63960
-Z
-*src/routes/admin/albumseditor/+page.svelte,0/4/04bb5ac032e0b294d55cc6243cc486db2ce85203
 ]
 -src/routes/api/pictures/[filename]/+server.ts,d/2/d2f875b8bd733d565902dc06925c4cb1d2e82912
-R
-"src/routes/api/pictures/+server.ts,2/8/287f4bf6337fa1c2a7a0fc72cb09af0c01313d60
 [
 +src/routes/admin/specieseditor/+page.svelte,3/b/3b423687a27440b2cd746a95fc0263f9768debd8
 Q
 !src/routes/api/species/+server.ts,7/5/756262bc163593532b9abe6a3a215817fd21e263
-F
-src/lib/services/db.ts,d/3/d328ef25161e1319410a1e80413959bc28882429
 E
 src/lib/Header.svelte,e/8/e870add1a7bfc5839b46b8535c2632ddd72e760c
 M
 src/routes/login/+page.svelte,3/0/30afc255620d9af551ec4b3180d1c6ad5713a268
 N
 src/routes/logout/+page.svelte,2/5/25c84b79bad20ed787819a7adbc605d080e3d2d4
+P
+ src/routes/login/+page.server.ts,4/a/4aa6216ce946997970c7a463da9fdf18d27fadf3
+T
+$src/routes/admin/upload/+page.svelte,b/f/bf9cafd946b5c76535eb512a1aa2adc5e94b20b4
+C
+src/hooks.server.ts,9/4/942a1693401444fa24de4b6f50876b7dca6c1397
+;
+myserver.js,9/a/9aea9c43696f548d0c57567f5f00862a39498a06
+R
+"src/routes/api/pictures/+server.ts,2/8/287f4bf6337fa1c2a7a0fc72cb09af0c01313d60
+P
+ src/routes/api/albums/+server.ts,7/2/72917ed3c4cc4c00a60bd24296e2b32175fee8a8
+F
+src/lib/services/db.ts,d/3/d328ef25161e1319410a1e80413959bc28882429
+Z
+*src/routes/admin/albumseditor/+page.svelte,0/4/04bb5ac032e0b294d55cc6243cc486db2ce85203

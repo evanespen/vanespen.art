@@ -1,6 +1,7 @@
 // import {Pool} from 'pg';
 import pkg from 'pg';
-const { Pool } = pkg;
+
+const {Pool} = pkg;
 
 const client = new Pool({
     user: import.meta.env.VITE_PG_USER,
@@ -161,6 +162,12 @@ export const db = {
         } catch (err) {
             console.error(err);
         }
+    },
+
+    async createAlbum(name, description) {
+        const query = await client.query(`INSERT INTO albums(name, description) VALUES('${name}', '${description}')`);
+        console.log(query);
+        return;
     },
 
     async addToAlbum(albumId, pictureId) {
