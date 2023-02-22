@@ -24,7 +24,7 @@ export const db = {
 
     async insertPicture(picture) {
         const queryStr = `
-            INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode, timestamp, path, stared, blured, landscape) VALUES
+            INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode, timestamp, path, stared, blured, landscape, notes) VALUES
             (
             '${picture.aperture}',
             '${picture.camera}',
@@ -39,7 +39,8 @@ export const db = {
             '${picture.path}',
             false,
             false,
-            ${picture.landscape}
+            ${picture.landscape},
+            '${picture.notes}'
             )
             `;
         return client.query(queryStr);

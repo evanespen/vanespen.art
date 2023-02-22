@@ -12,6 +12,9 @@
     import Ruler from '$lib/svgs/ruler.svg?url';
     import Settings from '$lib/svgs/settings.svg?url';
     import Timer from '$lib/svgs/time.svg?url';
+    import Star from '$lib/svgs/star.svg?url';
+    import Chemistry from '$lib/svgs/chemistry.svg?url';
+    import Note from '$lib/svgs/note.svg?url';
 
     const dispatch = createEventDispatcher()
     let lightBox
@@ -33,7 +36,9 @@
 
     export function setPicture(_picture) {
         picture = _picture
-        exif = [
+        console.log(picture)
+
+        const normalExif = [
             {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
             {icon: Camera, value: picture?.cam_model},
             {icon: Settings, value: modes[picture?.mode]},
@@ -43,6 +48,39 @@
             {icon: Ruler, value: picture?.focal},
             {icon: Flash, value: picture?.flash.includes('No') ? 'Non' : 'Oui'},
         ]
+
+        const customExifAstro = [
+            {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
+            {icon: Star, value: picture?.notes.split('XXX')[1]},
+            {icon: Note, value: picture?.notes.split('XXX')[2]},
+        ]
+
+        const customExifFilm = [
+            {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
+            {icon: Chemistry, value: picture?.notes.split('XXX')[1]},
+            {icon: Note, value: picture?.notes.split('XXX')[2] !== 'null' ? picture?.notes.split('XXX')[2] : ''},
+        ]
+
+        if (picture.notes !== '') {
+            if (picture.notes.split('XXX')[0] === 'ASTRO') {
+                exif = customExifAstro
+            } else if (picture.notes.split('XXX')[0] === 'FILM') {
+                exif = customExifFilm
+            }
+
+        } else {
+            console.log('normal picture')
+            exif = [
+                {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
+                {icon: Camera, value: picture?.cam_model},
+                {icon: Settings, value: modes[picture?.mode]},
+                {icon: Aperture, value: picture?.aperture},
+                {icon: Iso, value: picture?.iso},
+                {icon: Timer, value: picture?.exposure},
+                {icon: Ruler, value: picture?.focal},
+                {icon: Flash, value: picture?.flash.includes('No') ? 'Non' : 'Oui'},
+            ]
+        }
     }
 
     export function closeLightbox() {
@@ -52,6 +90,7 @@
         lightBox.style.left = '-100vw'
         window.setTimeout(() => {
             picture = undefined
+            exif = undefined
             dispatch('closeLightbox', {})
             lightBox.style.left = '0'
             lightBox.classList.remove('closing')

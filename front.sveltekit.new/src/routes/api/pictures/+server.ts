@@ -72,10 +72,33 @@ export async function POST({url, request}) {
             expanded: false,
             includeUnknown: false
         });
+
+        let notes = '', dateString, timestamp;
+        try {
+            const notesCharCodes = tags.UserComment.value.filter(c => c !== 0);
+            notes = String.fromCharCode(...notesCharCodes).replace("'", "''");
+            if (notes.includes('UNICODE')) {
+                notes = notes.replace('UNICODE', '');
+            } else if (notes.includes('ASCII')) {
+                notes = notes.replace('ASCII', '');
+            }
+            console.log(typeof (notes), notes)
+
+            const datetimeDescription = tags.DateTime.description;
+            const date = datetimeDescription.split(' ')[0].replaceAll(':', '/');
+            const time = datetimeDescription.split(' ')[1];
+            dateString = Moment(`${date}} ${time}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD hh:mm:ss');
+            timestamp = Moment(`${date}} ${time}`, 'YYYY-MM-DD HH:mm:ss').unix()
+        } catch (e) {
+            console.log(e)
+            dateString = Moment(tags.CreateDate.description).format('YYYY-MM-DD hh:mm:ss');
+            timestamp = Moment(tags.CreateDate.description).unix();
+        }
+
         const picture = {
             path: fileName,
-            dateString: Moment(tags.CreateDate.description).format('YYYY-MM-DD hh:mm:ss'),
-            timestamp: Moment(tags.CreateDate.description).unix(),
+            dateString: dateString,
+            timestamp: timestamp,
             camera: tags.Model?.description || '',
             mode: tags.ExposureProgram?.description || '',
             aperture: tags.FNumber?.description || '',
@@ -87,6 +110,7 @@ export async function POST({url, request}) {
             height: tags['Image Height'].value,
             width: tags['Image Width'].value,
             landscape: tags['Image Width'].value > tags['Image Height'].value,
+            notes: notes,
         }
 
         // create half-res file
@@ -96,6 +120,7 @@ export async function POST({url, request}) {
             width: picture.width / 2,
             height: picture.height / 2,
         });
+        console.log('halfres created')
 
         // create thumb
         const thumb = await resize({
@@ -104,6 +129,7 @@ export async function POST({url, request}) {
             width: picture.width / 3,
             height: picture.height / 3,
         });
+        console.log('thumb created')
 
         try {
             const res = await db.insertPicture(picture);
