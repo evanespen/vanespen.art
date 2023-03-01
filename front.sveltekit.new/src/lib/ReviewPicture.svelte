@@ -4,6 +4,7 @@
     import ThumbsDown from '$lib/svgs/thumbs-down.svg?url';
     import ThumbsDownFilled from '$lib/svgs/thumbs-down--filled.svg?url'
     import Send from '$lib/svgs/send.svg?url';
+    import Download from '$lib/svgs/download.svg?url';
 
     export let picture;
     export let review;
@@ -39,25 +40,36 @@
         });
     }
 
+    function download() {
+        const a = document.createElement('a');
+        a.href = src;
+        a.download = src.split('/').pop();
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
 </script>
 
 <main>
     <img {src}>
     <div id="controls">
-        <div id="thumbs">
+        <div id="buttons">
 
             {#if picture.status === -1}
-                <button on:click={() => setStatus(0)}><img src={ThumbsDownFilled} alt=""></button>
                 <button on:click={() => setStatus(1)}><img src={ThumbsUp} alt=""></button>
+                <button on:click={() => setStatus(0)}><img src={ThumbsDownFilled} alt=""></button>
             {/if}
             {#if picture.status === 0}
-                <button on:click={() => setStatus(-1)}><img src={ThumbsDown} alt=""></button>
                 <button on:click={() => setStatus(1)}><img src={ThumbsUp} alt=""></button>
+                <button on:click={() => setStatus(-1)}><img src={ThumbsDown} alt=""></button>
             {/if}
             {#if picture.status === 1}
-                <button on:click={() => setStatus(-1)}><img src={ThumbsDown} alt=""></button>
                 <button on:click={() => setStatus(0)}><img src={ThumbsUpFilled} alt=""></button>
+                <button on:click={() => setStatus(-1)}><img src={ThumbsDown} alt=""></button>
             {/if}
+
+            <button on:click={download}><img src={Download} alt=""></button>
 
         </div>
         <div id="comment">
@@ -72,23 +84,34 @@
   @import "$src/fonts.scss";
 
   main {
-    border-radius: 10px;
+    border-radius: 0 0 10px 10px;
     background-color: white;
     box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+    width: 25vw;
+
+    @media (max-width: 800px) {
+      width: 100%;
+    }
+
 
     img {
-      max-height: 100%;
-      max-width: 100%;
-      min-height: 100px;
+      width: 100%;
     }
 
     #controls {
       height: 100px;
       display: flex;
       justify-content: space-between;
+      padding: 0px 10px;
 
-      #thumbs {
+      #buttons {
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        width: 25%;
+
         button {
+          height: 32px;
           border: none;
           outline: none;
           background: none;
@@ -98,7 +121,8 @@
           }
 
           img {
-            width: 50px;
+            width: 100%;
+            height: 100%;
           }
         }
       }
@@ -106,9 +130,10 @@
       #comment {
         display: flex;
         justify-content: center;
+        align-items: center;
 
         button {
-          height: 20px;
+          width: 32px;
           border: none;
           outline: none;
           background: none;
@@ -118,13 +143,15 @@
           }
 
           img {
-            width: 20px;
+            width: 100%;
+            height: 100%;
           }
         }
 
         textarea {
           height: 80%;
           resize: none;
+          font-family: sans-serif;
         }
       }
     }

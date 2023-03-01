@@ -258,8 +258,9 @@ export const db = {
 
     async createReviewPicture(reviewPicture) {
         try {
-            const query = await client.query(`INSERT INTO review_pictures(path, name, review_id, review_name, landscape, status, comment)
+            const query = await client.query(`INSERT INTO review_pictures(path, name, hash, review_id, review_name, landscape, status, comment)
                                               VALUES ('${reviewPicture.path}', '${reviewPicture.name}',
+                                                      '${reviewPicture.hash}',
                                                       '${reviewPicture.review_id}', '${reviewPicture.review_name}',
                                                       ${reviewPicture.landscape}, '${reviewPicture.status}',
                                                       '${reviewPicture.comment}')`);
@@ -303,6 +304,32 @@ export const db = {
                 DELETE
                 FROM reviews
                 WHERE name = '${name}'`);
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async reviewPicture(reviewName, pictureName) {
+        try {
+            const query = await client.query(`SELECT *
+                                              FROM review_pictures
+                                              WHERE review_name = '${reviewName}'
+                                                AND name = '${pictureName}'`);
+            return query.rows[0];
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async reviewPictureUpdateHash(reviewName, pictureName, newHash) {
+        try {
+            const query = await client.query(`UPDATE review_pictures
+                                              SET hash = '${newHash}'
+                                              WHERE review_name = '${reviewName}'
+                                                AND name = '${pictureName}'`);
             console.log(query.rows);
         } catch (err) {
             console.error(err);
