@@ -24,31 +24,32 @@ export const db = {
 
     async insertPicture(picture) {
         const queryStr = `
-            INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode, timestamp, path, stared, blured, landscape, notes) VALUES
-            (
-            '${picture.aperture}',
-            '${picture.camera}',
-            '${picture.exposure}',
-            '${picture.flash}',
-            '${picture.focal}',
-            '${picture.focal}',
-            '${picture.iso}',
-            '${picture.lens}',
-            '${picture.mode}',
-            timestamp '${picture.dateString}',
-            '${picture.path}',
-            false,
-            false,
-            ${picture.landscape},
-            '${picture.notes}'
-            )
-            `;
+            INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode, timestamp,
+                                 path, stared, blured, landscape, notes)
+            VALUES ('${picture.aperture}',
+                    '${picture.camera}',
+                    '${picture.exposure}',
+                    '${picture.flash}',
+                    '${picture.focal}',
+                    '${picture.focal}',
+                    '${picture.iso}',
+                    '${picture.lens}',
+                    '${picture.mode}',
+                    timestamp '${picture.dateString}',
+                    '${picture.path}',
+                    false,
+                    false,
+                    ${picture.landscape},
+                    '${picture.notes}')
+        `;
         return client.query(queryStr);
     },
 
     async deletePicture(id) {
         try {
-            const query = await client.query(`DELETE FROM pictures WHERE id = ${id}`)
+            const query = await client.query(`DELETE
+                                              FROM pictures
+                                              WHERE id = ${id}`)
         } catch (err) {
             console.error(err);
             return;
@@ -57,7 +58,9 @@ export const db = {
 
     async starPicture(id) {
         try {
-            const query = await client.query(`UPDATE pictures SET stared = true WHERE id = ${id}`)
+            const query = await client.query(`UPDATE pictures
+                                              SET stared = true
+                                              WHERE id = ${id}`)
         } catch (err) {
             console.error(err);
             return;
@@ -66,7 +69,9 @@ export const db = {
 
     async unstarPicture(id) {
         try {
-            const query = await client.query(`UPDATE pictures SET stared = false WHERE id = ${id}`)
+            const query = await client.query(`UPDATE pictures
+                                              SET stared = false
+                                              WHERE id = ${id}`)
         } catch (err) {
             console.error(err);
             return;
@@ -75,7 +80,9 @@ export const db = {
 
     async picturesBySpecieId(specieId) {
         try {
-            const pictures = await client.query(`SELECT * FROM pictures WHERE pictures.species_id = ${specieId}`);
+            const pictures = await client.query(`SELECT *
+                                                 FROM pictures
+                                                 WHERE pictures.species_id = ${specieId}`);
             return pictures.rows;
         } catch (err) {
             console.error(err);
@@ -99,7 +106,10 @@ export const db = {
 
             let species = [];
             for (const s of _species.rows) {
-                const picturesQuery = await client.query(`SELECT * FROM pictures WHERE pictures.species_id IS NOT NULL AND pictures.species_id = ${s.id}`);
+                const picturesQuery = await client.query(`SELECT *
+                                                          FROM pictures
+                                                          WHERE pictures.species_id IS NOT NULL
+                                                            AND pictures.species_id = ${s.id}`);
                 s.pictures = picturesQuery.rows;
                 species.push(s);
             }
@@ -113,9 +123,14 @@ export const db = {
 
     async specie(name) {
         try {
-            const specieQuery = await client.query(`SELECT * FROM species WHERE name = '${name}'`);
+            const specieQuery = await client.query(`SELECT *
+                                                    FROM species
+                                                    WHERE name = '${name}'`);
             const specie = specieQuery.rows[0];
-            const picturesQuery = await client.query(`SELECT * FROM pictures WHERE pictures.species_id IS NOT NULL AND pictures.species_id = ${specie.id}`);
+            const picturesQuery = await client.query(`SELECT *
+                                                      FROM pictures
+                                                      WHERE pictures.species_id IS NOT NULL
+                                                        AND pictures.species_id = ${specie.id}`);
             const pictures = picturesQuery.rows;
             specie.pictures = pictures;
             return specie;
@@ -125,11 +140,15 @@ export const db = {
     },
 
     async addToSpecie(specieId, pictureId) {
-        const query = await client.query(`UPDATE pictures SET species_id = ${specieId} WHERE id = ${pictureId}`);
+        const query = await client.query(`UPDATE pictures
+                                          SET species_id = ${specieId}
+                                          WHERE id = ${pictureId}`);
     },
 
     async removeFromSpecie(specieId, pictureId) {
-        const query = await client.query(`UPDATE pictures SET species_id = NULL WHERE id = ${pictureId}`);
+        const query = await client.query(`UPDATE pictures
+                                          SET species_id = NULL
+                                          WHERE id = ${pictureId}`);
     },
 
     async albums() {
@@ -166,14 +185,16 @@ export const db = {
     },
 
     async createAlbum(name, description) {
-        const query = await client.query(`INSERT INTO albums(name, description) VALUES('${name}', '${description}')`);
+        const query = await client.query(`INSERT INTO albums(name, description)
+                                          VALUES ('${name}', '${description}')`);
         console.log(query);
         return;
     },
 
     async addToAlbum(albumId, pictureId) {
         try {
-            const query = await client.query(`INSERT INTO albums_pictures(picture_id, gallery_id) VALUES(${pictureId}, ${albumId})`)
+            const query = await client.query(`INSERT INTO albums_pictures(picture_id, gallery_id)
+                                              VALUES (${pictureId}, ${albumId})`)
             console.log(query.rows);
         } catch (err) {
             console.error(err);
@@ -183,11 +204,109 @@ export const db = {
 
     async removeFromAlbum(albumId, pictureId) {
         try {
-            const query = await client.query(`DELETE FROM albums_pictures WHERE picture_id = ${pictureId} AND gallery_id = ${albumId}`)
+            const query = await client.query(`DELETE
+                                              FROM albums_pictures
+                                              WHERE picture_id = ${pictureId}
+                                                AND gallery_id = ${albumId}`)
             console.log(query.rows);
         } catch (err) {
             console.error(err);
             return;
         }
     },
+
+    async reviews() {
+        try {
+            const reviews = await client.query('SELECT * FROM reviews');
+            for (const review of reviews.rows) {
+                const picturesQuery = await client.query('SELECT * FROM review_pictures WHERE review_id = ' + review.id);
+                review.pictures = picturesQuery.rows;
+            }
+
+            return reviews.rows;
+        } catch (err) {
+            console.error(err);
+            return [];
+        }
+    },
+
+    async review(name) {
+        try {
+            const reviewQuery = await client.query(`SELECT *
+                                                    FROM reviews
+                                                    WHERE name = '${name}'`);
+            let review = reviewQuery.rows[0];
+            const picturesQuery = await client.query('SELECT * FROM review_pictures WHERE review_id = ' + review.id)
+            review.pictures = picturesQuery.rows;
+            return review;
+        } catch (err) {
+            console.error(err);
+            return {};
+        }
+    },
+
+    async createReview(name, password) {
+        try {
+            const query = await client.query(`INSERT INTO reviews(name, password)
+                                              VALUES ('${name}', '${password}')`);
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async createReviewPicture(reviewPicture) {
+        try {
+            const query = await client.query(`INSERT INTO review_pictures(path, name, review_id, review_name, landscape, status, comment)
+                                              VALUES ('${reviewPicture.path}', '${reviewPicture.name}',
+                                                      '${reviewPicture.review_id}', '${reviewPicture.review_name}',
+                                                      ${reviewPicture.landscape}, '${reviewPicture.status}',
+                                                      '${reviewPicture.comment}')`);
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async setReviewPictureStatus(reviewName, pictureName, value) {
+        try {
+            console.log('IN DB', reviewName, pictureName, value);
+            const query = await client.query(`UPDATE review_pictures
+                                              SET status = ${value}
+                                              WHERE review_name = '${reviewName}'
+                                                AND name = '${pictureName}'`);
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+    async setReviewPictureComment(reviewName, pictureName, value) {
+        try {
+            console.log('IN DB', reviewName, pictureName, value);
+            const query = await client.query(`UPDATE review_pictures
+                                              SET comment = '${value}'
+                                              WHERE review_name = '${reviewName}'
+                                                AND name = '${pictureName}'`);
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    },
+
+    async deleteReview(name) {
+        try {
+            const query = await client.query(`
+                DELETE
+                FROM reviews
+                WHERE name = '${name}'`);
+            console.log(query.rows);
+        } catch (err) {
+            console.error(err);
+            return;
+        }
+    }
 }
