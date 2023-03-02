@@ -6,21 +6,24 @@ import {db} from "$lib/services/db.ts";
 export async function GET({params}) {
     const reviewsStorage = import.meta.env.VITE_STORAGE_REVIEWS;
     const filePath = `${reviewsStorage}/${params.reviewname}/${params.picturename}`;
-    let contentType = 'image/jpeg';
 
+    let headers;
     if (filePath.endsWith('.zip')) {
-        console.log('its the zip');
-        contentType = 'application/zip';
+        headers = {
+            'Content-Type': 'application/zip',
+            'Content-Length': fs.statSync(filePath).size,
+            'Content-Disposition': `attachment; filename=${params.picturename}`
+        }
+    } else {
+        headers = {
+            'Content-Type': 'image/jpeg',
+            'Content-Length': fs.statSync(filePath).size
+        }
     }
 
     return new Response(
         fs.readFileSync(filePath),
-        {
-            headers: {
-                'Content-Type': contentType,
-                'Content-Length': fs.statSync(filePath).size
-            }
-        }
+        {headers}
     );
 }
 

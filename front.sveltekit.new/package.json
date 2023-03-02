@@ -53,6 +53,7 @@
     "moment": "^2.29.4",
     "mongodb": "^4.9.0",
     "pg": "^8.8.0",
-    "resize-image": "^0.1.0"
+    "resize-image": "^0.1.0",
+    "streamsaver": "^2.0.6"
   }
 }

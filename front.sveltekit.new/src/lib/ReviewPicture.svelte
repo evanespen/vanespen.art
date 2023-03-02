@@ -88,6 +88,7 @@
     background-color: white;
     box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
     width: 25vw;
+    align-self: start;
 
     @media (max-width: 800px) {
       width: 100%;

@@ -8,13 +8,15 @@
     const review = data.review;
 
     function downloadAll() {
-        const src = `/api/review-pictures/${review.name}/${review.name}.zip`;
-        const a = document.createElement('a');
-        a.href = src;
-        a.download = src.split('/').pop();
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        data.archives.forEach(archiveName => {
+            const src = `/api/review-pictures/${review.name}/${archiveName}`;
+            const a = document.createElement('a');
+            a.href = src;
+            a.download = src.split('/').pop();
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        })
     }
 </script>
 
@@ -77,7 +79,7 @@
       margin-top: 2vh;
 
       button {
-        @include f-p-2;
+        @include f-p-b;
         width: 100%;
         font-size: 2em;
         outline: none !important;
