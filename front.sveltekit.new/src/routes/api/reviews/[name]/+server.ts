@@ -45,16 +45,13 @@ async function process(fileName: string, review: Object, bus: EventEmitter) {
             expanded: false,
             includeUnknown: false
         });
-        resize({
+        await resize({
             src: filePath,
             dst: HALF_DIR + `/${fileName}`,
             width: tags['Image Width'].value / 2,
             height: tags['Image Height'].value / 2,
-        }).then(() => {
-            sendStatus(fileName, 'half', true, bus);
-        }).catch(err => {
-            sendStatus(fileName, 'half', false, bus);
-        });
+        })
+        sendStatus(fileName, 'half', true, bus);
 
         const hash = crypto.createHash('md5');
         hash.update(buffer);
@@ -77,23 +74,25 @@ async function process(fileName: string, review: Object, bus: EventEmitter) {
             const existingPicture = await db.reviewPicture(review.name, reviewPicture.name);
             if (reviewPicture.hash !== existingPicture.hash) {
                 console.log(reviewPicture.name, 'already exists but hash differs, updating hash');
-                db.reviewPictureUpdateHash(review.name, reviewPicture.name, reviewPicture.hash).then(() => {
+                try {
+                    await db.reviewPictureUpdateHash(review.name, reviewPicture.name, reviewPicture.hash);
                     sendStatus(fileName, 'db', true, bus);
-                }).catch(err => {
-                    console.error(err);
+                } catch (err) {
                     sendStatus(fileName, 'db', false, bus);
-                })
+                    console.error(err);
+                }
             } else {
                 sendStatus(fileName, 'db', true, bus);
             }
         } else {
             console.log(reviewPicture.name, 'does not exist, creating')
-            db.createReviewPicture(reviewPicture).then(() => {
+            try {
+                await db.createReviewPicture(reviewPicture);
                 sendStatus(fileName, 'db', true, bus);
-            }).catch(err => {
+            } catch (err) {
                 console.error(err);
                 sendStatus(fileName, 'db', false, bus);
-            })
+            }
         }
 
 
