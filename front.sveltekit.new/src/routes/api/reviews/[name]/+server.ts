@@ -111,7 +111,7 @@ export async function PUT({request, params}) {
 
         const review = await db.review(params.name);
         for (const fileName of fs.readdirSync(REVIEW_STORAGE)) {
-            process(fileName, review, bus);
+            await process(fileName, review, bus);
         }
 
         // ARCHIVES CREATION
