@@ -40,7 +40,7 @@ async function process(fileName: string, review: Object, bus: EventEmitter) {
         if (!fs.existsSync(HALF_DIR)) {
             fs.mkdirSync(HALF_DIR);
         }
-        ;
+
         const tags = ExifReader.load(buffer, {
             expanded: false,
             includeUnknown: false
@@ -72,8 +72,7 @@ async function process(fileName: string, review: Object, bus: EventEmitter) {
         }
 
         const reviewQuery = await db.review(review.name);
-        const picturesInReview = reviewQuery.pictures.map(rp => rp.name);
-        if (picturesInReview.includes(reviewPicture.name)) {
+        if (review.pictures.map(rp => rp.name).includes(reviewPicture.name)) {
 
             const existingPicture = await db.reviewPicture(review.name, reviewPicture.name);
             if (reviewPicture.hash !== existingPicture.hash) {
