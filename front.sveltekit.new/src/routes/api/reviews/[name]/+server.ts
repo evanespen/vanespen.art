@@ -45,13 +45,17 @@ async function process(fileName: string, review: Object, bus: EventEmitter) {
             expanded: false,
             includeUnknown: false
         });
-        await resize({
+        resize({
             src: filePath,
             dst: HALF_DIR + `/${fileName}`,
             width: tags['Image Width'].value / 2,
             height: tags['Image Height'].value / 2,
+        }).then(() => {
+            sendStatus(fileName, 'half', true, bus);
+        }).catch(err => {
+            console.error(err);
+            sendStatus(fileName, 'half', false, bus);
         })
-        sendStatus(fileName, 'half', true, bus);
 
         const hash = crypto.createHash('md5');
         hash.update(buffer);
@@ -68,31 +72,28 @@ async function process(fileName: string, review: Object, bus: EventEmitter) {
             landscape: false,
         }
 
-        const reviewQuery = await db.review(review.name);
         if (review.pictures.map(rp => rp.name).includes(reviewPicture.name)) {
-
-            const existingPicture = await db.reviewPicture(review.name, reviewPicture.name);
-            if (reviewPicture.hash !== existingPicture.hash) {
-                console.log(reviewPicture.name, 'already exists but hash differs, updating hash');
-                try {
-                    await db.reviewPictureUpdateHash(review.name, reviewPicture.name, reviewPicture.hash);
+            db.reviewPicture(review.name, reviewPicture.name).then(existingPicture => {
+                if (reviewPicture.hash !== existingPicture.hash) {
+                    console.log(reviewPicture.name, 'already exists but hash differs, updating hash');
+                    db.reviewPictureUpdateHash(review.name, reviewPicture.name, reviewPicture.hash).then(() => {
+                        sendStatus(fileName, 'db', true, bus);
+                    }).catch(err => {
+                        sendStatus(fileName, 'db', false, bus);
+                        console.error(err);
+                    });
+                } else {
                     sendStatus(fileName, 'db', true, bus);
-                } catch (err) {
-                    sendStatus(fileName, 'db', false, bus);
-                    console.error(err);
                 }
-            } else {
-                sendStatus(fileName, 'db', true, bus);
-            }
+            });
         } else {
             console.log(reviewPicture.name, 'does not exist, creating')
-            try {
-                await db.createReviewPicture(reviewPicture);
+            db.createReviewPicture(reviewPicture).then(() => {
                 sendStatus(fileName, 'db', true, bus);
-            } catch (err) {
+            }).catch(err => {
                 console.error(err);
                 sendStatus(fileName, 'db', false, bus);
-            }
+            });
         }
 
 
@@ -111,14 +112,20 @@ export async function PUT({request, params}) {
 
         const review = await db.review(params.name);
         for (const fileName of fs.readdirSync(REVIEW_STORAGE)) {
-            await process(fileName, review, bus);
+            process(fileName, review, bus);
         }
+
+        return new Response(readable, {
+            headers: {
+                'cache-control': 'no-cache',
+                'content-type': 'text/event-stream',
+            }
+        });
 
         // ARCHIVES CREATION
         let maxCount = 50, currentCount = 0;
         const picturesList = fs.readdirSync(REVIEW_STORAGE).filter(f => f.endsWith('.jpg') || f.endsWith('.jpeg') || f.endsWith('.png'));
         console.log(picturesList);
-
 
         let neededArchives = Math.round(picturesList.length / maxCount);
         neededArchives = neededArchives === 0 ? 1 : neededArchives;
@@ -146,15 +153,5 @@ export async function PUT({request, params}) {
                     sendStatus('archive', 'archive', true, bus);
                 })
         }
-
-
     }
-
-
-    return new Response(readable, {
-        headers: {
-            'cache-control': 'no-cache',
-            'content-type': 'text/event-stream',
-        }
-    });
 }
