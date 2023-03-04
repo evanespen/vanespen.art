@@ -84,6 +84,7 @@
   @import "$src/fonts.scss";
 
   main {
+    z-index: 10000;
     border-radius: 0 0 10px 10px;
     background-color: white;
     box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
@@ -109,7 +110,7 @@
         display: flex;
         align-items: center;
         justify-content: space-around;
-        width: 25%;
+        width: 20%;
 
         button {
           height: 32px;
@@ -130,8 +131,9 @@
 
       #comment {
         display: flex;
-        justify-content: center;
+        justify-content: flex-end;
         align-items: center;
+        width: 80%;
 
         button {
           width: 32px;
@@ -151,6 +153,7 @@
 
         textarea {
           height: 80%;
+          width: 80%;
           resize: none;
           font-family: sans-serif;
         }

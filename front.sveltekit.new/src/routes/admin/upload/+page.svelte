@@ -1,8 +1,13 @@
 <script lang="ts">
+    import Checkmark from "$lib/svgs/checkmark--outline.svg?component";
+    import Error from "$lib/svgs/error.svg?component";
+    import Pending from "$lib/svgs/pending.svg?component";
 
     let dropZone, dropzoneContainer, files = [], accepted = [], rejected = [],
         buttonDisabled = true,
         currentStep = 0;
+
+    let statuses = undefined;
 
     function dragIgnore(evt) {
         evt.stopPropagation();
@@ -43,41 +48,47 @@
         }
     }
 
-    function upload() {
+    async function upload() {
         currentStep = 2;
         buttonDisabled = true;
         const payload = new FormData();
 
+        let _statuses = {};
         for (let i = 0; i < files.length; i++) {
             payload.append(`file_${i}`, files[i], files[i].name)
+            _statuses[files[i].name] = {
+                fileName: files[i].name,
+                exif: undefined,
+                full: undefined,
+                db: undefined,
+                thumb: undefined,
+                half: undefined,
+            };
         }
+        $: statuses = _statuses;
         payload.append('count', files.length);
 
-        const uploadRequest = fetch('/api/pictures', {
+        const response = await fetch('/api/pictures', {
             method: 'POST',
             body: payload
-        }).then(res => {
-            res.json().then(data => {
-                $: accepted = data.accepted;
-                $: rejected = data.rejected;
-
-                data.accepted.forEach(a => {
-                    console.log(a);
-                    document.getElementById(a).classList.add('image-accepted');
-                })
-                data.rejected.forEach(r => {
-                    console.log(document.getElementById(r));
-                    document.getElementById(r).classList.add('image-rejected');
-                })
-
-                currentStep = 3;
-            })
-        })
+        });
+        const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+        console.log('reader started');
+        while (true) {
+            const {value, done} = await reader.read();
+            console.log(JSON.parse(value).data);
+            const record = JSON.parse(value).data;
+            console.log(record.fileName, record.step, record.status)
+            statuses[record.fileName][record.step] = record.status;
+            if (done) break;
+        }
+        currentStep = 3;
     }
 </script>
 
 <main>
     <h2>Import</h2>
+
     <div id="dropzone-container" bind:this={dropzoneContainer}>
         <div id="dropzone" bind:this={dropZone} on:drop={drop} on:dragover={dragIgnore} on:dragenter={dragIgnore}></div>
         <button class:disabled={currentStep >= 2} on:click={upload}>Envoyer</button>
@@ -101,10 +112,34 @@
     </div>
 
     <div id="logs">
-        Photos acceptées : <br/>
-        <code>{accepted}</code> <br/>
-        Photos rejettées :<br/>
-        <code>{rejected}</code> <br/>
+        <div id="statuses-header">
+            <div class="status-header-cell">File Name</div>
+            <div class="status-header-cell">Exif</div>
+            <div class="status-header-cell">Full</div>
+            <div class="status-header-cell">DB</div>
+            <div class="status-header-cell">Half</div>
+            <div class="status-header-cell">Thumb</div>
+        </div>
+        {#if statuses}
+            {#each Object.keys(statuses) as fname}
+                <div class="status-row">
+                    <div class="status-cell">{fname}</div>
+                    {#each ['exif', 'full', 'db', 'half', 'thumb'] as step}
+                        <div class="status-cell">
+                            {#if statuses[fname][step] === undefined}
+                                <Pending width=30 height=30 fill="#03A9F4"/>
+                            {:else}
+                                {#if statuses[fname][step]}
+                                    <Checkmark width=30 height=30 fill="#8BC34A"/>
+                                {:else}
+                                    <Error width=30 height=30 fill="#FF5722"/>
+                                {/if}
+                            {/if}
+                        </div>
+                    {/each}
+                </div>
+            {/each}
+        {/if}
     </div>
 </main>
 
@@ -118,6 +153,10 @@
     position: fixed;
     top: 10vh;
     left: 10vw;
+
+    h2 {
+      @include f-p-b;
+    }
   }
 
   #dropzone-container {
@@ -206,9 +245,32 @@
   }
 
   #logs {
-    margin-top: 20px;
-    @include f-p-2;
-    font-size: 2em;
+    margin-top: 30px;
+    width: 100%;
+
+    #statuses-header {
+      @include f-p-2;
+      font-size: 1.5em;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      border-bottom: 1px solid $subcolor;
+    }
+
+    .status-cell, .status-header-cell {
+      width: 16%;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+
+      .status-cell {
+        min-width: 50px;
+        font-family: monospace;
+      }
+    }
   }
 
   :global(.preview-element) {

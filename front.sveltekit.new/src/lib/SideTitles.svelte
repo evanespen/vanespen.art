@@ -9,7 +9,7 @@
     @include f-h;
     color: $subcolor;
     opacity: .1;
-    z-index: 1000000;
+    z-index: -1;
     font-size: 6em;
 
     display: flex;
@@ -35,7 +35,7 @@
     font-size: 4em;
     color: $subcolor;
     opacity: .1;
-    z-index: 1000000;
+    z-index: -1;
 
     position: fixed;
     width: 100vh;

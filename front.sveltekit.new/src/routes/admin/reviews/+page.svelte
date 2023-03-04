@@ -5,11 +5,16 @@
     import View from '$lib/svgs/view.svg?url';
     import {goto} from "$app/navigation";
 
+    import Checkmark from "$lib/svgs/checkmark--outline.svg?component";
+    import Error from "$lib/svgs/error.svg?component";
+    import Pending from "$lib/svgs/pending.svg?component";
+
     let newReview = {
         name: '',
         password: ''
     }
-    let reviews = []
+    let reviews = [];
+    let statuses = {}, archiveDone = undefined;
 
     function loadReviews() {
         fetch('/api/reviews').then(res => {
@@ -31,16 +36,37 @@
         })
     }
 
-    function handleRefresh(name) {
-        fetch(`/api/reviews/${name}`, {
+    async function handleRefresh(name) {
+
+        const response = await fetch(`/api/reviews/${name}`, {
             method: 'PUT',
             body: JSON.stringify({
                 action: 'refresh'
             })
-        }).then(res => {
-            console.log(res)
-            loadReviews()
-        })
+        });
+        const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+        console.log('reader started');
+        while (true) {
+            const {value, done} = await reader.read();
+            const data = JSON.parse(value).data;
+
+            if (data.fileName === 'archive') {
+                archiveDone = data.status;
+            } else {
+                if (!Object.keys(statuses).includes(data.fileName)) {
+                    let _statuses = statuses;
+                    _statuses[data.fileName] = {
+                        db: undefined,
+                        half: undefined,
+                    };
+                    $: statuses = _statuses;
+                }
+
+                $: statuses[data.fileName][data.step] = data.status;
+            }
+
+            if (done) break;
+        }
     }
 
     function handleDelete(name) {
@@ -94,6 +120,51 @@
                                                                                               src={Trashcan} alt="">
                     </button>
                 </div>
+            </div>
+        {/each}
+    </div>
+
+    <div id="archives">
+        <h1>Archives</h1>
+        <div id="archives-row">
+            <div class="archives-cell">Archives</div>
+            <div class="archives-cell">
+                {#if archiveDone === undefined}
+                    <Pending width=30 height=30 fill="#03A9F4"/>
+                {:else}
+                    {#if archiveDone}
+                        <Checkmark width=30 height=30 fill="#8BC34A"/>
+                    {:else}
+                        <Error width=30 height=30 fill="#FF5722"/>
+                    {/if}
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    <div id="logs">
+        <h1>Status</h1>
+        <div id="logs-header">
+            <div class="log-cell">Fichier</div>
+            <div class="log-cell">DB</div>
+            <div class="log-cell">Half</div>
+        </div>
+        {#each Object.keys(statuses) as fname}
+            <div class="log-row">
+                <div class="log-cell">{fname}</div>
+                {#each ['db', 'half'] as step}
+                    <div class="log-cell">
+                        {#if statuses[fname][step] === undefined}
+                            <Pending width=30 height=30 fill="#03A9F4"/>
+                        {:else}
+                            {#if statuses[fname][step]}
+                                <Checkmark width=30 height=30 fill="#8BC34A"/>
+                            {:else}
+                                <Error width=30 height=30 fill="#FF5722"/>
+                            {/if}
+                        {/if}
+                    </div>
+                {/each}
             </div>
         {/each}
     </div>
@@ -201,6 +272,44 @@
           &.btn-error {
             color: red;
           }
+        }
+      }
+    }
+
+    #archives {
+      width: 100%;
+
+      #archives-row {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        .archives-cell {
+          width: 50%;
+        }
+      }
+    }
+
+    #logs {
+      width: 100%;
+
+      #logs-header {
+        @include f-p-2;
+        font-size: 1.5em;
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        border-bottom: 1px solid $subcolor;
+        margin-bottom: 20px;
+      }
+
+      #logs-header, .log-row {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+
+        .log-cell {
+          width: 30%;
         }
       }
     }

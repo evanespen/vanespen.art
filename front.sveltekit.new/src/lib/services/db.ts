@@ -23,26 +23,30 @@ export const db = {
     },
 
     async insertPicture(picture) {
-        const queryStr = `
-            INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode, timestamp,
-                                 path, stared, blured, landscape, notes)
-            VALUES ('${picture.aperture}',
-                    '${picture.camera}',
-                    '${picture.exposure}',
-                    '${picture.flash}',
-                    '${picture.focal}',
-                    '${picture.focal}',
-                    '${picture.iso}',
-                    '${picture.lens}',
-                    '${picture.mode}',
-                    timestamp '${picture.dateString}',
-                    '${picture.path}',
-                    false,
-                    false,
-                    ${picture.landscape},
-                    '${picture.notes}')
-        `;
-        return client.query(queryStr);
+        try {
+            return client.query(`
+                INSERT INTO pictures(aperture, cam_model, exposure, flash, focal, focal_equiv, iso, lens, mode,
+                                     timestamp,
+                                     path, stared, blured, landscape, notes)
+                VALUES ('${picture.aperture}',
+                        '${picture.camera}',
+                        '${picture.exposure}',
+                        '${picture.flash}',
+                        '${picture.focal}',
+                        '${picture.focal}',
+                        '${picture.iso}',
+                        '${picture.lens}',
+                        '${picture.mode}',
+                        timestamp '${picture.dateString}',
+                        '${picture.path}',
+                        false,
+                        false,
+                        ${picture.landscape},
+                        '${picture.notes}')
+            `);
+        } catch (err) {
+            console.error(err);
+        }
     },
 
     async deletePicture(id) {
