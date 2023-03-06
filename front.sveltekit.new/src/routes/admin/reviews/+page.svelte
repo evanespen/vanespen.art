@@ -71,7 +71,6 @@
             let done = false;
             let pollingLoop = window.setInterval(async () => {
                 await fetch(`/api/reviews/${name}/events`).then(async res => {
-                    console.log('poll')
                     const rawEvents = await res.json();
                     if (rawEvents.events.length > 0) {
                         done = processEvents(rawEvents.events);

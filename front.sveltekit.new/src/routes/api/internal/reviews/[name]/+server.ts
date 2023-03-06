@@ -147,10 +147,9 @@ export async function POST({request, params}) {
                 .on('finish', () => {
                     console.log('zipfile created -> ', zipFname);
                     logStatus('archive', 'archive', true, logFileName);
+                    logStatus('ALL', 'ALL', true, logFileName);
                 })
         }
-
-        logStatus('ALL', 'ALL', true, logFileName);
     }
 
     return json({status: 'ok'});
