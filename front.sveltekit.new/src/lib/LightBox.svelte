@@ -50,15 +50,15 @@
         ]
 
         const customExifAstro = [
-            {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
-            {icon: Star, value: picture?.notes.split('XXX')[1]},
-            {icon: Note, value: picture?.notes.split('XXX')[2]},
+            {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
+            {icon: Star, value: picture.notes?.split('XXX')[1]},
+            {icon: Note, value: picture.notes?.split('XXX')[2]},
         ]
 
         const customExifFilm = [
-            {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
-            {icon: Chemistry, value: picture?.notes.split('XXX')[1]},
-            {icon: Note, value: picture?.notes.split('XXX')[2] !== 'null' ? picture?.notes.split('XXX')[2] : ''},
+            {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
+            {icon: Chemistry, value: picture.notes?.split('XXX')[1]},
+            {icon: Note, value: picture.notes?.split('XXX')[2] !== 'null' ? picture.notes?.split('XXX')[2] : ''},
         ]
 
         if (picture.notes !== '' || picture.notes === undefined || picture.notes === null) {
