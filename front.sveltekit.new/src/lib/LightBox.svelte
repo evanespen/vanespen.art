@@ -14,6 +14,7 @@
     import Timer from '$lib/svgs/time.svg?url';
     import Chemistry from '$lib/svgs/chemistry.svg?url';
     import Note from '$lib/svgs/note.svg?url';
+    import Star from '$lib/svgs/star.svg?url';
 
     const dispatch = createEventDispatcher()
     let lightBox
@@ -37,32 +38,21 @@
         picture = _picture
         console.log(picture)
 
-        const normalExif = [
-            {icon: Calendar, value: Moment(picture?.day).format('DD MMMM YYYY', 'fr')},
-            {icon: Camera, value: picture?.cam_model},
-            {icon: Settings, value: modes[picture?.mode]},
-            {icon: Aperture, value: picture?.aperture},
-            {icon: Iso, value: picture?.iso},
-            {icon: Timer, value: picture?.exposure},
-            {icon: Ruler, value: picture?.focal},
-            {icon: Flash, value: picture?.flash.includes('No') ? 'Non' : 'Oui'},
-        ]
 
-
-        if (picture.notes !== '') {
+        if (picture.notes !== '' && picture.notes !== null) {
             if (picture.notes.split('XXX')[0] === 'ASTRO') {
                 exif = [
                     {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
-                    {icon: Star, value: picture.notes?.split('XXX')[1]},
-                    {icon: Note, value: picture.notes?.split('XXX')[2]},
+                    {icon: Star, value: picture.notes.split('XXX')[1]},
+                    {icon: Note, value: picture.notes.split('XXX')[2]},
                 ];
             } else if (picture.notes.split('XXX')[0] === 'FILM') {
                 exif = [
                     {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
-                    {icon: Chemistry, value: picture.notes?.split('XXX')[1]},
+                    {icon: Chemistry, value: picture.notes.split('XXX')[1]},
                     {
                         icon: Note,
-                        value: picture.notes?.split('XXX')[2] !== 'null' ? picture.notes?.split('XXX')[2] : ''
+                        value: picture.notes.split('XXX')[2] !== 'null' ? picture.notes.split('XXX')[2] : ''
                     },
                 ];
             }
