@@ -1,15 +1,36 @@
-<script>
+<script lang="ts">
     import {onMount} from "svelte"
     import Renew from '$lib/svgs/renew.svg?url';
     import Trashcan from '$lib/svgs/trashcan.svg?url';
     import View from '$lib/svgs/view.svg?url';
+    import List from '$lib/svgs/list.svg?url';
     import {goto} from "$app/navigation";
+    import Status from '$lib/Status.svelte';
 
     let newReview = {
         name: '',
         password: ''
     }
-    let reviews = []
+    let reviews = [];
+    let showEvents = false;
+    let events = {}, archivesDone = undefined;
+
+    function processEvents(rawEvents): boolean {
+        let _events = events;
+        let done = false;
+        for (const event of rawEvents) {
+            if (event.fileName === 'archive') {
+                archivesDone = event.status;
+            } else if (event.fileName === 'ALL' && event.status === true) {
+                done = true;
+            } else {
+                _events[event.fileName][event.step] = event.status;
+            }
+        }
+
+        $: events = _events;
+        return done;
+    }
 
     function loadReviews() {
         fetch('/api/reviews').then(res => {
@@ -20,8 +41,6 @@
     }
 
     function handleNewReview() {
-        console.log(newReview.name, newReview.password);
-
         fetch('/api/reviews', {
             method: 'POST',
             body: JSON.stringify(newReview)
@@ -31,15 +50,63 @@
         })
     }
 
-    function handleRefresh(name) {
+    async function handleLoadEvents(name) {
+        fetch(`/api/reviews/${name}`, {
+            method: 'GET',
+        }).then(async res => {
+            const body = await res.json();
+            let _events = {};
+            showEvents = true;
+            body.review.pictures.forEach(picture => {
+                _events[picture.name] = {
+                    half: undefined,
+                    db: undefined,
+                };
+                $: events = _events;
+            });
+
+            let done = false;
+            let pollingLoop = window.setInterval(async () => {
+                await fetch(`/api/reviews/${name}/events`).then(async res => {
+                    const rawEvents = await res.json();
+                    if (rawEvents.events.length > 0) {
+                        done = processEvents(rawEvents.events);
+                        if (done) clearInterval(pollingLoop);
+                    }
+                })
+            }, 1000);
+        });
+    }
+
+    async function handleRefresh(name) {
+        showEvents = true;
         fetch(`/api/reviews/${name}`, {
             method: 'PUT',
             body: JSON.stringify({
                 action: 'refresh'
             })
-        }).then(res => {
-            console.log(res)
-            loadReviews()
+        }).then(async res => {
+            const body = await res.json();
+            const picturesList = body.picturesList;
+            let _events = {};
+            picturesList.forEach(pictureName => {
+                _events[pictureName] = {
+                    half: undefined,
+                    db: undefined,
+                };
+                $: events = _events;
+            });
+
+            let done = false;
+            let pollingLoop = window.setInterval(async () => {
+                await fetch(`/api/reviews/${name}/events`).then(async res => {
+                    const rawEvents = await res.json();
+                    if (rawEvents.events.length > 0) {
+                        done = processEvents(rawEvents.events);
+                        if (done) clearInterval(pollingLoop);
+                    }
+                })
+            }, 1000);
         })
     }
 
@@ -90,6 +157,9 @@
                                                                                             alt=""></button>
                     <button class="btn-error" on:click={() => handleRefresh(review.name)}><img class="icon" src={Renew}
                                                                                                alt=""></button>
+                    <button class="btn-error" on:click={() => handleLoadEvents(review.name)}><img class="icon"
+                                                                                                  src={List}
+                                                                                                  alt=""></button>
                     <button class="btn-error" on:click={() => handleDelete(review.name)}><img class="icon"
                                                                                               src={Trashcan} alt="">
                     </button>
@@ -97,6 +167,27 @@
             </div>
         {/each}
     </div>
+
+    {#if showEvents}
+        <div id="events">
+            <h2>Evenements</h2>
+            <div id="events-header" class="events-row">
+                <div class="events-cell">Fichier</div>
+                <div class="events-cell">Miniature</div>
+                <div class="events-cell">BDD</div>
+            </div>
+            {#each Object.keys(events) as fileName}
+                <div class="events-row">
+                    <div class="events-cell">{fileName}</div>
+                    <Status status={events[fileName].half}/>
+                    <Status status={events[fileName].db}/>
+                </div>
+            {/each}
+
+            <h2>Archives</h2>
+            <Status status={archivesDone}/>
+        </div>
+    {/if}
 </main>
 
 <style lang="scss">
@@ -106,7 +197,7 @@
   main {
     @include f-p-2;
     width: 80vw;
-    position: fixed;
+    position: absolute;
     top: 10vh;
     left: 10vw;
 
@@ -201,6 +292,26 @@
           &.btn-error {
             color: red;
           }
+        }
+      }
+    }
+
+    #events {
+      width: 100%;
+
+      #events-header {
+        @include f-p-b;
+        font-size: 1.3em;
+        border-bottom: 1px solid $subcolor
+      }
+
+      .events-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+
+        .events-cell {
+          width: 30%;
         }
       }
     }
