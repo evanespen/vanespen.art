@@ -37,18 +37,6 @@ async function process(fileName: string, review: Object, logFileName: string) {
             expanded: false,
             includeUnknown: false
         });
-        try {
-            await resize({
-                src: filePath,
-                dst: HALF_DIR + `/${fileName}`,
-                width: tags['Image Width'].value / 2,
-                height: tags['Image Height'].value / 2,
-            });
-            logStatus(fileName, 'half', true, logFileName);
-        } catch (err) {
-            console.error(err);
-            logStatus(fileName, 'half', false, logFileName);
-        }
 
         const hash = crypto.createHash('md5');
         hash.update(buffer);
@@ -68,7 +56,7 @@ async function process(fileName: string, review: Object, logFileName: string) {
         if (review.pictures.map(rp => rp.name).includes(reviewPicture.name)) {
             const existingPicture = await db.reviewPicture(review.name, reviewPicture.name);
             if (reviewPicture.hash !== existingPicture.hash) {
-                console.log(reviewPicture.name, 'already exists but hash differs, updating hash');
+                console.log(reviewPicture.name, 'already exists but hash differs, updating hash and half');
 
                 try {
                     await db.reviewPictureUpdateHash(review.name, reviewPicture.name, reviewPicture.hash)
@@ -78,15 +66,44 @@ async function process(fileName: string, review: Object, logFileName: string) {
                     console.error(err);
                 }
 
+                try {
+                    await resize({
+                        src: filePath,
+                        dst: HALF_DIR + `/${fileName}`,
+                        width: tags['Image Width'].value / 2,
+                        height: tags['Image Height'].value / 2,
+                    });
+                    logStatus(fileName, 'half', true, logFileName);
+                } catch (err) {
+                    console.error(err);
+                    logStatus(fileName, 'half', false, logFileName);
+                }
+
             } else {
+                console.log(reviewPicture.name, 'already exists, same hash, skipping db and half');
                 logStatus(fileName, 'db', true, logFileName);
+                logStatus(fileName, 'half', true, logFileName);
             }
 
         } else {
-            console.log(reviewPicture.name, 'does not exist, creating')
+            console.log(reviewPicture.name, 'does not exist, creating in db and half')
             try {
                 await db.createReviewPicture(reviewPicture);
                 logStatus(fileName, 'db', true, logFileName);
+
+                try {
+                    await resize({
+                        src: filePath,
+                        dst: HALF_DIR + `/${fileName}`,
+                        width: tags['Image Width'].value / 2,
+                        height: tags['Image Height'].value / 2,
+                    });
+                    logStatus(fileName, 'half', true, logFileName);
+                } catch (err) {
+                    console.error(err);
+                    logStatus(fileName, 'half', false, logFileName);
+                }
+
             } catch (err) {
                 console.error(err);
                 logStatus(fileName, 'db', false, logFileName);
