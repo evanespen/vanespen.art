@@ -5,9 +5,9 @@ import {db} from "$lib/services/db.ts";
 // import crypto from "crypto";
 
 /** @type {import('./$types').RequestHandler} */
-// export async function GET() {
-//     return json({reviews: await db.reviews()});
-// }
+export async function GET({params}) {
+    return json({review: await db.review(params.name)});
+}
 
 export async function DELETE({params, url}) {
     console.log(params.name);

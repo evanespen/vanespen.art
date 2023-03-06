@@ -3,6 +3,7 @@
     import Renew from '$lib/svgs/renew.svg?url';
     import Trashcan from '$lib/svgs/trashcan.svg?url';
     import View from '$lib/svgs/view.svg?url';
+    import List from '$lib/svgs/list.svg?url';
     import {goto} from "$app/navigation";
     import Status from '$lib/Status.svelte';
 
@@ -47,6 +48,34 @@
             console.log(res)
             loadReviews()
         })
+    }
+
+    async function handleLoadEvents(name) {
+        fetch(`/api/reviews/${name}`, {
+            method: 'GET',
+        }).then(async res => {
+            const body = await res.json();
+            let _events = {};
+            showEvents = true;
+            body.review.pictures.forEach(picture => {
+                _events[picture.name] = {
+                    half: undefined,
+                    db: undefined,
+                };
+                $: events = _events;
+            });
+
+            let done = false;
+            let pollingLoop = window.setInterval(async () => {
+                await fetch(`/api/reviews/${name}/events`).then(async res => {
+                    const rawEvents = await res.json();
+                    if (rawEvents.events.length > 0) {
+                        done = processEvents(rawEvents.events);
+                        if (done) clearInterval(pollingLoop);
+                    }
+                })
+            }, 1000);
+        });
     }
 
     async function handleRefresh(name) {
@@ -128,6 +157,9 @@
                                                                                             alt=""></button>
                     <button class="btn-error" on:click={() => handleRefresh(review.name)}><img class="icon" src={Renew}
                                                                                                alt=""></button>
+                    <button class="btn-error" on:click={() => handleLoadEvents(review.name)}><img class="icon"
+                                                                                                  src={List}
+                                                                                                  alt=""></button>
                     <button class="btn-error" on:click={() => handleDelete(review.name)}><img class="icon"
                                                                                               src={Trashcan} alt="">
                     </button>
@@ -165,7 +197,7 @@
   main {
     @include f-p-2;
     width: 80vw;
-    position: fixed;
+    position: absolute;
     top: 10vh;
     left: 10vw;
 
