@@ -12,7 +12,6 @@
     import Ruler from '$lib/svgs/ruler.svg?url';
     import Settings from '$lib/svgs/settings.svg?url';
     import Timer from '$lib/svgs/time.svg?url';
-    import Star from '$lib/svgs/star.svg?url';
     import Chemistry from '$lib/svgs/chemistry.svg?url';
     import Note from '$lib/svgs/note.svg?url';
 
@@ -49,23 +48,23 @@
             {icon: Flash, value: picture?.flash.includes('No') ? 'Non' : 'Oui'},
         ]
 
-        const customExifAstro = [
-            {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
-            {icon: Star, value: picture.notes?.split('XXX')[1]},
-            {icon: Note, value: picture.notes?.split('XXX')[2]},
-        ]
 
-        const customExifFilm = [
-            {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
-            {icon: Chemistry, value: picture.notes?.split('XXX')[1]},
-            {icon: Note, value: picture.notes?.split('XXX')[2] !== 'null' ? picture.notes?.split('XXX')[2] : ''},
-        ]
-
-        if (picture.notes !== '' || picture.notes === undefined || picture.notes === null) {
+        if (picture.notes !== '') {
             if (picture.notes.split('XXX')[0] === 'ASTRO') {
-                exif = customExifAstro
+                exif = [
+                    {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
+                    {icon: Star, value: picture.notes?.split('XXX')[1]},
+                    {icon: Note, value: picture.notes?.split('XXX')[2]},
+                ];
             } else if (picture.notes.split('XXX')[0] === 'FILM') {
-                exif = customExifFilm
+                exif = [
+                    {icon: Calendar, value: Moment(picture.day).format('DD MMMM YYYY', 'fr')},
+                    {icon: Chemistry, value: picture.notes?.split('XXX')[1]},
+                    {
+                        icon: Note,
+                        value: picture.notes?.split('XXX')[2] !== 'null' ? picture.notes?.split('XXX')[2] : ''
+                    },
+                ];
             }
 
         } else {
