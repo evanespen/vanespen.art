@@ -61,7 +61,7 @@
             {icon: Note, value: picture?.notes.split('XXX')[2] !== 'null' ? picture?.notes.split('XXX')[2] : ''},
         ]
 
-        if (picture.notes !== '') {
+        if (picture.notes !== '' || picture.notes === undefined || picture.notes === null) {
             if (picture.notes.split('XXX')[0] === 'ASTRO') {
                 exif = customExifAstro
             } else if (picture.notes.split('XXX')[0] === 'FILM') {
