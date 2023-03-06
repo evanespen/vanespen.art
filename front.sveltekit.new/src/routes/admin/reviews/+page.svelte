@@ -1,15 +1,35 @@
-<script>
+<script lang="ts">
     import {onMount} from "svelte"
     import Renew from '$lib/svgs/renew.svg?url';
     import Trashcan from '$lib/svgs/trashcan.svg?url';
     import View from '$lib/svgs/view.svg?url';
     import {goto} from "$app/navigation";
+    import Status from '$lib/Status.svelte';
 
     let newReview = {
         name: '',
         password: ''
     }
-    let reviews = []
+    let reviews = [];
+    let showEvents = false;
+    let events = {}, archivesDone = undefined;
+
+    function processEvents(rawEvents): boolean {
+        let _events = events;
+        let done = false;
+        for (const event of rawEvents) {
+            if (event.fileName === 'archive') {
+                archivesDone = event.status;
+            } else if (event.fileName === 'ALL' && event.status === true) {
+                done = true;
+            } else {
+                _events[event.fileName][event.step] = event.status;
+            }
+        }
+
+        $: events = _events;
+        return done;
+    }
 
     function loadReviews() {
         fetch('/api/reviews').then(res => {
@@ -20,8 +40,6 @@
     }
 
     function handleNewReview() {
-        console.log(newReview.name, newReview.password);
-
         fetch('/api/reviews', {
             method: 'POST',
             body: JSON.stringify(newReview)
@@ -31,15 +49,36 @@
         })
     }
 
-    function handleRefresh(name) {
+    async function handleRefresh(name) {
+        showEvents = true;
         fetch(`/api/reviews/${name}`, {
             method: 'PUT',
             body: JSON.stringify({
                 action: 'refresh'
             })
-        }).then(res => {
-            console.log(res)
-            loadReviews()
+        }).then(async res => {
+            const body = await res.json();
+            const picturesList = body.picturesList;
+            let _events = {};
+            picturesList.forEach(pictureName => {
+                _events[pictureName] = {
+                    half: undefined,
+                    db: undefined,
+                };
+                $: events = _events;
+            });
+
+            let done = false;
+            let pollingLoop = window.setInterval(async () => {
+                await fetch(`/api/reviews/${name}/events`).then(async res => {
+                    console.log('poll')
+                    const rawEvents = await res.json();
+                    if (rawEvents.events.length > 0) {
+                        done = processEvents(rawEvents.events);
+                        if (done) clearInterval(pollingLoop);
+                    }
+                })
+            }, 1000);
         })
     }
 
@@ -97,6 +136,27 @@
             </div>
         {/each}
     </div>
+
+    {#if showEvents}
+        <div id="events">
+            <h2>Evenements</h2>
+            <div id="events-header" class="events-row">
+                <div class="events-cell">Fichier</div>
+                <div class="events-cell">Miniature</div>
+                <div class="events-cell">BDD</div>
+            </div>
+            {#each Object.keys(events) as fileName}
+                <div class="events-row">
+                    <div class="events-cell">{fileName}</div>
+                    <Status status={events[fileName].half}/>
+                    <Status status={events[fileName].db}/>
+                </div>
+            {/each}
+
+            <h2>Archives</h2>
+            <Status status={archivesDone}/>
+        </div>
+    {/if}
 </main>
 
 <style lang="scss">
@@ -201,6 +261,26 @@
           &.btn-error {
             color: red;
           }
+        }
+      }
+    }
+
+    #events {
+      width: 100%;
+
+      #events-header {
+        @include f-p-b;
+        font-size: 1.3em;
+        border-bottom: 1px solid $subcolor
+      }
+
+      .events-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+
+        .events-cell {
+          width: 30%;
         }
       }
     }

@@ -17,11 +17,15 @@ export async function handle({event, resolve}) {
     }
 
     if (event.url.pathname.includes('admin')) {
+        // here?
+        console.log(event.url.pathname);
+        console.log(event.cookies.get('sessionid'));
+        // /here?
         if (event.cookies.get('sessionid') === undefined) {
             return new Response('Redirect', {status: 303, headers: {Location: '/login'}});
         }
     }
-    
+
 
     if (event.cookies.get('sessionid') !== undefined) {
         const cookies = cookie.parse(event.request.headers.get('cookie') || '');
