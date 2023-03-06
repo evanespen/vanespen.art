@@ -3,9 +3,18 @@ import {json} from '@sveltejs/kit';
 import {db} from "$lib/services/db.ts";
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({params}) {
+export async function GET({params, url}) {
+    const wantedType = url.searchParams.get('type');
+    console.log('wantedType', wantedType);
     const reviewsStorage = import.meta.env.VITE_STORAGE_REVIEWS;
-    const filePath = `${reviewsStorage}/${params.reviewname}/${params.picturename}`;
+
+    let filePath;
+    if (wantedType === null) {
+        filePath = `${reviewsStorage}/${params.reviewname}/${params.picturename}`;
+    } else if (wantedType === 'half') {
+        filePath = `${reviewsStorage}/${params.reviewname}/half/${params.picturename}`;
+    }
+
 
     let headers;
     if (filePath.endsWith('.zip')) {

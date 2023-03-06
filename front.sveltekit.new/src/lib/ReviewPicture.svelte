@@ -1,10 +1,10 @@
 <script lang="ts">
-    import ThumbsUp from '$lib/svgs/thumbs-up.svg?url';
-    import ThumbsUpFilled from '$lib/svgs/thumbs-up--filled.svg?url';
-    import ThumbsDown from '$lib/svgs/thumbs-down.svg?url';
-    import ThumbsDownFilled from '$lib/svgs/thumbs-down--filled.svg?url'
-    import Send from '$lib/svgs/send.svg?url';
-    import Download from '$lib/svgs/download.svg?url';
+    import ThumbsUp from '$lib/svgs/thumbs-up.svg?component';
+    import ThumbsUpFilled from '$lib/svgs/thumbs-up--filled.svg?component';
+    import ThumbsDown from '$lib/svgs/thumbs-down.svg?component';
+    import ThumbsDownFilled from '$lib/svgs/thumbs-down--filled.svg?component'
+    import Send from '$lib/svgs/send.svg?component';
+    import Download from '$lib/svgs/download.svg?component';
 
     export let picture;
     export let review;
@@ -52,29 +52,45 @@
 </script>
 
 <main>
-    <img {src}>
+    <img src={`${src}?type=half`}>
     <div id="controls">
         <div id="buttons">
 
             {#if picture.status === -1}
-                <button on:click={() => setStatus(1)}><img src={ThumbsUp} alt=""></button>
-                <button on:click={() => setStatus(0)}><img src={ThumbsDownFilled} alt=""></button>
+                <button on:click={() => setStatus(1)}>
+                    <ThumbsUp/>
+                </button>
+                <button on:click={() => setStatus(0)}>
+                    <ThumbsDownFilled fill="#E64A19"/>
+                </button>
             {/if}
             {#if picture.status === 0}
-                <button on:click={() => setStatus(1)}><img src={ThumbsUp} alt=""></button>
-                <button on:click={() => setStatus(-1)}><img src={ThumbsDown} alt=""></button>
+                <button on:click={() => setStatus(1)}>
+                    <ThumbsUp/>
+                </button>
+                <button on:click={() => setStatus(-1)}>
+                    <ThumbsDown/>
+                </button>
             {/if}
             {#if picture.status === 1}
-                <button on:click={() => setStatus(0)}><img src={ThumbsUpFilled} alt=""></button>
-                <button on:click={() => setStatus(-1)}><img src={ThumbsDown} alt=""></button>
+                <button on:click={() => setStatus(0)}>
+                    <ThumbsUpFilled fill="#689F38"/>
+                </button>
+                <button on:click={() => setStatus(-1)}>
+                    <ThumbsDown/>
+                </button>
             {/if}
 
-            <button on:click={download}><img src={Download} alt=""></button>
+            <button on:click={download}>
+                <Download/>
+            </button>
 
         </div>
         <div id="comment">
-            <textarea cols="50" rows="2" bind:value={comment} placeholder="Commentaire..."></textarea>
-            <button on:click={() => setComment()}><img src={Send} alt=""></button>
+            <textarea bind:value={comment} placeholder="Commentaire..."></textarea>
+            <button on:click={() => setComment()}>
+                <Send/>
+            </button>
         </div>
     </div>
 </main>
@@ -129,6 +145,7 @@
       }
 
       #comment {
+        width: 70%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -150,6 +167,7 @@
         }
 
         textarea {
+          width: 100%;
           height: 80%;
           resize: none;
           font-family: sans-serif;
