@@ -6,6 +6,7 @@
     import List from '$lib/svgs/list.svg?url';
     import {goto} from "$app/navigation";
     import Status from '$lib/Status.svelte';
+    import {getHeaders} from "$lib/services/adminHeaders";
 
     let newReview = {
         name: '',
@@ -33,7 +34,7 @@
     }
 
     function loadReviews() {
-        fetch('/api/reviews').then(res => {
+        fetch('/api/reviews', {headers: getHeaders()}).then(res => {
             res.json().then(data => {
                 $: reviews = data.reviews
             })
@@ -43,9 +44,10 @@
     function handleNewReview() {
         fetch('/api/reviews', {
             method: 'POST',
-            body: JSON.stringify(newReview)
+            body: JSON.stringify(newReview),
+            headers: getHeaders(),
         }).then(res => {
-            console.log(res)
+            console.log(res.status);
             loadReviews()
         })
     }
@@ -53,6 +55,7 @@
     async function handleLoadEvents(name) {
         fetch(`/api/reviews/${name}`, {
             method: 'GET',
+            headers: getHeaders(),
         }).then(async res => {
             const body = await res.json();
             let _events = {};
@@ -67,7 +70,7 @@
 
             let done = false;
             let pollingLoop = window.setInterval(async () => {
-                await fetch(`/api/reviews/${name}/events`).then(async res => {
+                await fetch(`/api/reviews/${name}/events`, {headers: getHeaders()}).then(async res => {
                     const rawEvents = await res.json();
                     if (rawEvents.events.length > 0) {
                         done = processEvents(rawEvents.events);
@@ -82,6 +85,7 @@
         showEvents = true;
         fetch(`/api/reviews/${name}`, {
             method: 'PUT',
+            headers: getHeaders(),
             body: JSON.stringify({
                 action: 'refresh'
             })
@@ -99,7 +103,7 @@
 
             let done = false;
             let pollingLoop = window.setInterval(async () => {
-                await fetch(`/api/reviews/${name}/events`).then(async res => {
+                await fetch(`/api/reviews/${name}/events`, {headers: getHeaders()}).then(async res => {
                     const rawEvents = await res.json();
                     if (rawEvents.events.length > 0) {
                         done = processEvents(rawEvents.events);
@@ -113,14 +117,14 @@
     function handleDelete(name) {
         fetch(`/api/reviews/${name}`, {
             method: 'DELETE',
+            headers: getHeaders(),
         }).then(res => {
-            console.log(res)
-            loadReviews()
+            console.log(res.status);
+            loadReviews();
         })
     }
 
     function handleView(name) {
-        console.log(name)
         goto(`/reviews/${name}`)
     }
 

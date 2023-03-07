@@ -1,10 +1,11 @@
 import {json} from "@sveltejs/kit";
 import fs from 'fs';
 import {db} from "$lib/services/db";
+import {withAuth} from "$lib/services/apiGuard";
 
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({params}) {
+export const GET = withAuth(async ({params}) => {
     const MAIN_STORAGE = import.meta.env.VITE_STORAGE_REVIEWS;
     const review = await db.review(params.name);
     const REVIEW_STORAGE = `${MAIN_STORAGE}/${review.name}`;
@@ -22,4 +23,4 @@ export async function GET({params}) {
 
     }
     return json({events});
-}
+});

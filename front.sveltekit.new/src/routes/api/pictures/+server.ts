@@ -5,21 +5,20 @@ import crypto from "crypto";
 import {resize} from "easyimage";
 import ExifReader from 'exifreader';
 import Moment from "moment";
+import {withAuth} from "$lib/services/apiGuard";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
     return json({pictures: await db.pictures()});
 }
 
-export async function DELETE({url}) {
+export const DELETE = withAuth(async ({url}) => {
     const pictureId = Number(url.searchParams.get('id'));
-
     await db.deletePicture(pictureId);
-
     return new Response('ok');
-}
+});
 
-export async function PUT({url}) {
+export const PUT = withAuth(async ({url}) => {
     const pictureId = Number(url.searchParams.get('id'));
     const action = url.searchParams.get('action');
 
@@ -32,9 +31,9 @@ export async function PUT({url}) {
     console.log(pictureId, action)
 
     return new Response('ok');
-}
+});
 
-export async function POST({url, request}) {
+export const POST = withAuth(async ({url, request}) => {
     const data = await request.formData();
     const count = data.get('count');
 
@@ -143,4 +142,4 @@ export async function POST({url, request}) {
         accepted,
         rejected
     });
-}
+});

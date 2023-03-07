@@ -115,12 +115,6 @@
     }
 
     beforeUpdate(() => {
-        // if (lightBox) {
-        //     lightBox.addEventListener('click', event => {
-        //         closeLightbox();
-        //     });
-        // }
-
         if (window && lightBox) {
             import('hammerjs').then(Hammer => {
                 const manager = new Hammer.Manager(lightBox);

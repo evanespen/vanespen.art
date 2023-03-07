@@ -1,5 +1,7 @@
 <script lang="ts">
 
+    import {getHeaders} from "$lib/services/adminHeaders";
+
     let dropZone, dropzoneContainer, files = [], accepted = [], rejected = [],
         buttonDisabled = true,
         currentStep = 0;
@@ -55,6 +57,7 @@
 
         const uploadRequest = fetch('/api/pictures', {
             method: 'POST',
+            headers: getHeaders(),
             body: payload
         }).then(res => {
             res.json().then(data => {

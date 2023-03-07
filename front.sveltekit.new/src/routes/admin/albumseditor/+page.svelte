@@ -1,6 +1,7 @@
 <script lang="ts">
     import {Button, NativeSelect, TextInput} from '@svelteuidev/core';
     import {onMount} from "svelte";
+    import {getHeaders} from "$lib/services/adminHeaders";
 
     let pictures = [], albums = [];
 
@@ -10,8 +11,7 @@
 
     let newAlbumName, newAlbumDesc;
 
-    function
-    handleAlbumSelectChange(evt) {
+    function handleAlbumSelectChange(evt) {
         if (pictures.length > 0 && albums.length > 0) {
             selectedAlbum = albums.filter(a => a.name === selectedAlbumName)[0];
             picturesInAlbum = selectedAlbum.pictures.map(p => p.id);
@@ -27,6 +27,7 @@
 
         fetch('/api/albums', {
             method: 'PUT',
+            headers: getHeaders(),
             body: JSON.stringify({
                 pictureId: picture.id,
                 albumId: selectedAlbum.id,
@@ -43,14 +44,16 @@
         fetch('/api/albums').then(res => {
             res.json().then(data => {
                 $: albums = data.albums;
-                if (updated) {
-                    selectedAlbum = albums.filter(a => a.name === updated)[0];
-                } else {
-                    selectedAlbum = albums[0];
+                if (albums.length > 0) {
+                    if (updated) {
+                        selectedAlbum = albums.filter(a => a.name === updated)[0];
+                    } else {
+                        selectedAlbum = albums[0];
+                    }
+                    console.log('selectedalbum', selectedAlbum);
+                    selectedAlbumName = selectedAlbum.name;
+                    picturesInAlbum = selectedAlbum.pictures.map(p => p.id);
                 }
-                console.log('selectedalbum', selectedAlbum);
-                selectedAlbumName = selectedAlbum.name;
-                picturesInAlbum = selectedAlbum.pictures.map(p => p.id);
             });
         });
     }
@@ -60,6 +63,7 @@
 
         fetch('/api/albums', {
             method: 'POST',
+            headers: getHeaders(),
             body: JSON.stringify({
                 name: newAlbumName,
                 description: newAlbumDesc

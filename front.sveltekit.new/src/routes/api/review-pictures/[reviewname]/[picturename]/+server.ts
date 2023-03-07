@@ -38,12 +38,10 @@ export async function GET({params, url}) {
 
 export async function PUT({params, request}) {
     const payload = await request.json();
-    console.log(payload.action, payload.value, params);
 
     if (payload.action === 'setStatus') {
         await db.setReviewPictureStatus(params.reviewname, params.picturename, payload.value);
     } else if (payload.action === 'setComment') {
-        console.log(payload.value);
         await db.setReviewPictureComment(params.reviewname, params.picturename, payload.value);
     }
 

@@ -2,12 +2,14 @@ import {json} from '@sveltejs/kit';
 import fs from 'fs';
 import {db} from "$lib/services/db.ts";
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET() {
-    return json({reviews: await db.reviews()});
-}
+import {withAuth} from "$lib/services/apiGuard";
 
-export async function POST({request}) {
+/** @type {import('./$types').RequestHandler} */
+export const GET = withAuth(async ({request}) => {
+    return json({reviews: await db.reviews()});
+});
+
+export const POST = withAuth(async ({request}) => {
     const payload = await request.json();
     await db.createReview(payload.name, payload.password);
 
@@ -18,5 +20,5 @@ export async function POST({request}) {
     }
 
     return json({status: 'ok'});
-}
+});
 

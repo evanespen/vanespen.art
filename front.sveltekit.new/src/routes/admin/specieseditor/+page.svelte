@@ -39,13 +39,15 @@
         fetch('/api/species').then(res => {
             res.json().then(data => {
                 $: species = data.species;
-                if (updated) {
-                    selectedSpecie = species.filter(a => a.name === updated)[0];
-                } else {
-                    selectedSpecie = species[0];
+                if (species.length > 0) {
+                    if (updated) {
+                        selectedSpecie = species.filter(a => a.name === updated)[0];
+                    } else {
+                        selectedSpecie = species[0];
+                    }
+                    selectedSpecieName = selectedSpecie.name;
+                    picturesInSpecie = selectedSpecie.pictures.map(p => p.id);
                 }
-                selectedSpecieName = selectedSpecie.name;
-                picturesInSpecie = selectedSpecie.pictures.map(p => p.id);
             });
         });
     }

@@ -3,6 +3,7 @@
     import {scale} from 'svelte/transition';
     import {username} from "$lib/services/userStore.ts";
     import Icon from '@iconify/svelte';
+    import {getHeaders} from "$lib/services/adminHeaders";
 
     export let picture;
 
@@ -39,7 +40,7 @@
     async function starImage(evt) {
         evt.stopPropagation();
         const action = picture.stared ? 'unstar' : 'star';
-        const response = await fetch(`/api/pictures?id=${picture.id}&action=${action}`, {
+        const response = await fetch(`/api/pictures?id=${picture.id}&action=${action}`, {headers: getHeaders()}, {
             method: 'PUT'
         });
 
@@ -51,6 +52,7 @@
     async function deleteImage(evt) {
         evt.stopPropagation();
         const response = await fetch(`/api/pictures?id=${picture.id}`, {
+            headers: getHeaders(),
             method: 'DELETE'
         });
 

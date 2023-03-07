@@ -1,22 +1,21 @@
 import fs from 'fs';
 import {json} from "@sveltejs/kit";
 import {db} from "$lib/services/db.ts";
-
-// import crypto from "crypto";
+import {withAuth} from "$lib/services/apiGuard";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({params}) {
     return json({review: await db.review(params.name)});
 }
 
-export async function DELETE({params, url}) {
+export const DELETE = withAuth(async ({params, url}) => {
     console.log(params.name);
     await db.deleteReview(params.name);
     return json({status: 'ok'});
-}
+});
 
 
-export async function PUT({url, request, params}) {
+export const PUT = withAuth(async ({url, request, params}) => {
     const payload = await request.json();
 
     if (payload.action === 'refresh') {
@@ -36,4 +35,4 @@ export async function PUT({url, request, params}) {
 
         return json({picturesList});
     }
-}
+});
