@@ -9,7 +9,7 @@ import Moment from "moment";
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async () => {
-    let _pictures = await db.pictures();
+    let _pictures = await db.pictures.all();
 
     let pictures = {};
     _pictures.forEach(p => {

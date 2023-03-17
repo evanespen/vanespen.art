@@ -9,7 +9,7 @@ import {db} from '$lib/services/db.ts';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({params}) {
-    const specie = await db.specie(params.name);
+    const specie = await db.species.get(params.name);
     return {
         /** @type {Specie[]} */
         specie

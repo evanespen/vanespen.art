@@ -3,11 +3,16 @@
     import {onMount} from "svelte";
 
     let pictures = [], species = [];
-
     let selectedSpecie, selectedSpecieName, picturesInSpecie;
+    let newSpecie = {
+        name: '',
+        scientific_name: '',
+        threat: '',
+        info_page: '',
+        description: '',
+    }
 
-    function
-    handleSpecieSelectChange(evt) {
+    function handleSpecieSelectChange(evt) {
         if (pictures.length > 0 && species.length > 0) {
             selectedSpecie = species.filter(s => s.name === selectedSpecieName)[0];
             picturesInSpecie = selectedSpecie.pictures.map(p => p.id);
@@ -65,6 +70,7 @@
 </script>
 
 <main>
+    <h2>Nouvelle espèce</h2>
     {#if pictures.length > 0 && species.length > 0}
         <NativeSelect data={species.map(a => a.name)}
                       bind:value={selectedSpecieName}

@@ -3,7 +3,7 @@ import {json} from "@sveltejs/kit";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
-    return json({species: await db.speciesWithPictures()});
+    return json({species: await db.species.withPictures()});
 }
 
 export async function PUT({request}) {
@@ -13,9 +13,9 @@ export async function PUT({request}) {
     const action = payload.action;
 
     if (action === 'add') {
-        await db.addToSpecie(specieId, pictureId);
+        await db.species.addPicture(specieId, pictureId);
     } else if (action === 'remove') {
-        await db.removeFromSpecie(specieId, pictureId);
+        await db.species.removePicture(specieId, pictureId);
     }
 
     return json({status: 'ok'});

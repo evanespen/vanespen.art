@@ -9,12 +9,12 @@ import {withAuth} from "$lib/services/apiGuard";
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
-    return json({pictures: await db.pictures()});
+    return json({pictures: await db.pictures.all()});
 }
 
 export const DELETE = withAuth(async ({url}) => {
     const pictureId = Number(url.searchParams.get('id'));
-    await db.deletePicture(pictureId);
+    await db.pictures.delete(pictureId);
     return new Response('ok');
 });
 
@@ -23,9 +23,9 @@ export const PUT = withAuth(async ({url}) => {
     const action = url.searchParams.get('action');
 
     if (action === 'star') {
-        await db.starPicture(pictureId);
+        await db.pictures.star(pictureId);
     } else if (action === 'unstar') {
-        await db.unstarPicture(pictureId);
+        await db.pictures.unstar(pictureId);
     }
 
     console.log(pictureId, action)
@@ -113,7 +113,7 @@ export const POST = withAuth(async ({url, request}) => {
         }
 
         // create half-res file
-        const halfres = await resize({
+        await resize({
             src: FULL + `/${fileName}`,
             dst: HALF + `/${fileName}`,
             width: picture.width / 2,
@@ -122,7 +122,7 @@ export const POST = withAuth(async ({url, request}) => {
         console.log('halfres created')
 
         // create thumb
-        const thumb = await resize({
+        await resize({
             src: FULL + `/${fileName}`,
             dst: THUMB + `/${fileName}`,
             width: picture.width / 3,
@@ -131,7 +131,7 @@ export const POST = withAuth(async ({url, request}) => {
         console.log('thumb created')
 
         try {
-            const res = await db.insertPicture(picture);
+            await db.pictures.insert(picture);
             accepted.push(f.name);
         } catch (err) {
             rejected.push(f.name);
