@@ -37,6 +37,12 @@ export type Album = {
     description: string;
 };
 
+export type AlbumWithPictures = {
+    name: string;
+    description: string;
+    pictures: Array<Picture>;
+}
+
 export type Review = {
     id: number;
     name: string;

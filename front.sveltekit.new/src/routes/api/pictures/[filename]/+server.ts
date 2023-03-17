@@ -10,7 +10,7 @@ export async function GET({params, url}) {
     const wantedType = url.searchParams.get('type');
 
     const filepath = `${typesDirs[wantedType]}/${params.filename}`;
-    var stat = fs.statSync(filepath);
+    let stat = fs.statSync(filepath);
 
     return new Response(
         fs.readFileSync(filepath),

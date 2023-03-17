@@ -1,6 +1,6 @@
 import pkg from 'pg';
 
-import type {Picture, ReviewPicture, Specie} from "$lib/types";
+import type {AlbumWithPictures, Picture, ReviewPicture, Specie} from "$lib/types";
 
 const {Pool} = pkg;
 
@@ -202,16 +202,20 @@ export const db = {
             }
         },
 
-        get: async (name: string) => {
-            try {
-                const query = await client.query(`SELECT *
-                                                  FROM albums
-                                                  WHERE name = '${name}'
-                                                  LIMIT 1`);
-                return query.rows[0];
-            } catch (err) {
-                console.error(err);
-            }
+        get: async (name: string): Promise<AlbumWithPictures> => {
+            return client.query(`SELECT *
+                                 FROM albums
+                                 WHERE name = '${name}'`).then(res => {
+                const album = res.rows[0];
+
+                return client.query(`SELECT *
+                                     FROM pictures
+                                     WHERE pictures.id IN
+                                           (SELECT picture_id FROM albums_pictures WHERE gallery_id = ${album.id})`).then(res => {
+                    album.pictures = res.rows;
+                    return album;
+                })
+            });
         },
 
         post: async (name: string, description: string) => {
