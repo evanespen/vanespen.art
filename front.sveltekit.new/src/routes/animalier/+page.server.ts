@@ -18,8 +18,8 @@ export const load = async () => {
         else return 0
     })
 
-    for (const element of species) {
-        element.pictures = await db.picturesBySpecieId(element.id)
+    for (const specie of species) {
+        specie.pictures = await db.pictures.bySpecie(specie.id)
     }
 
     return {

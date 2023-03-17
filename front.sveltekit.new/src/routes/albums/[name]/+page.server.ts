@@ -2,7 +2,8 @@ import {db} from "$lib/services/db";
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load({params}) {
-    const album = await db.album(params.name)
+    console.log('toto', await db.albums.get('test'))
+    const album = await db.albums.get(params.name);
     return {
         album: album
     };

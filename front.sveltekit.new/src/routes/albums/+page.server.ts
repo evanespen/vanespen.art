@@ -11,6 +11,6 @@ import {db} from "$lib/services/db.ts";
 export const load = async () => {
     return {
         /** @type {Album[]} */
-        albums: await db.albums()
+        albums: await db.albums.all()
     }
 };
