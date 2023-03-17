@@ -11,8 +11,6 @@ export const GET = withAuth(async ({params}) => {
     const REVIEW_STORAGE = `${MAIN_STORAGE}/${review.name}`;
     const logFileName = `${REVIEW_STORAGE}/events.log`;
 
-    console.log(logFileName)
-
     let events = [];
     try {
         const rawEvents = fs.readFileSync(logFileName, 'utf-8');

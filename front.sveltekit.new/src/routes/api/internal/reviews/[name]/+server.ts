@@ -130,7 +130,7 @@ export async function POST({request, params}) {
         });
 
         for (const fileName of picturesList) {
-            if (!fileName.endsWith('.jpg') && !fileName.endsWith('.jpeg') && !fileName.endsWith('.png')) {
+            if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
                 await process(fileName, review, logFileName);
             }
         }
@@ -138,11 +138,14 @@ export async function POST({request, params}) {
         // ARCHIVES CREATION
         let maxCount = 50, currentCount = 0;
 
-        let neededArchives = Math.round(picturesList.length / maxCount);
-        neededArchives = neededArchives === 0 ? 1 : neededArchives;
+        let neededArchives = Math.ceil(picturesList.length / maxCount);
+        neededArchives = neededArchives == 0 ? 1 : neededArchives;
         let archives = [];
         for (let i = 0; i < neededArchives; i++) {
-            const fname = `${review.name}-partie-${i + 1}.zip`;
+            let fname = `${review.name}.zip`;
+            if (neededArchives > 1) {
+                fname = `${review.name}-partie-${i + 1}.zip`;
+            }
             console.log('creating archive', fname);
             archives[i] = {
                 fname: fname,
