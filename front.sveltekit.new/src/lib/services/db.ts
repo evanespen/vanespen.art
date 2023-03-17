@@ -271,7 +271,10 @@ export const db = {
                     FROM reviews
                     WHERE name = '${name}'`);
                 let review = reviewQuery.rows[0];
-                const picturesQuery = await client.query('SELECT * FROM review_pictures WHERE review_id = ' + review.id)
+                const picturesQuery = await client.query(`SELECT *
+                                                          FROM review_pictures
+                                                          WHERE review_id = ${review.id}
+                                                          ORDER BY name`);
                 review.pictures = picturesQuery.rows;
                 return review;
             } catch (err) {
