@@ -5,7 +5,6 @@ import {db} from "$lib/services/db.ts";
 /** @type {import('./$types').RequestHandler} */
 export async function GET({params, url}) {
     const wantedType = url.searchParams.get('type');
-    console.log('wantedType', wantedType);
     const reviewsStorage = import.meta.env.VITE_STORAGE_REVIEWS;
 
     let filePath;
@@ -40,9 +39,9 @@ export async function PUT({params, request}) {
     const payload = await request.json();
 
     if (payload.action === 'setStatus') {
-        await db.setReviewPictureStatus(params.reviewname, params.picturename, payload.value);
+        await db.reviews.picture.setStatus(params.reviewname, params.picturename, payload.value);
     } else if (payload.action === 'setComment') {
-        await db.setReviewPictureComment(params.reviewname, params.picturename, payload.value);
+        await db.reviews.picture.setComment(params.reviewname, params.picturename, payload.value);
     }
 
     return json({status: 'ok'});

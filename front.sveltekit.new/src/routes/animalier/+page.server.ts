@@ -10,7 +10,7 @@ import {db} from '$lib/services/db.ts';
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async () => {
-    let species = await db.species()
+    let species = await db.species.all()
     // @ts-ignore
     species = species.sort((a, b) => {
         if (a.name > b.name) return 1

@@ -204,7 +204,10 @@ export const db = {
 
         get: async (name: string) => {
             try {
-                const query = await client.query(`SELECT * FREOM albums WHERE name = '${name}' LIMIT 1`);
+                const query = await client.query(`SELECT *
+                                                  FROM albums
+                                                  WHERE name = '${name}'
+                                                  LIMIT 1`);
                 return query.rows[0];
             } catch (err) {
                 console.error(err);
